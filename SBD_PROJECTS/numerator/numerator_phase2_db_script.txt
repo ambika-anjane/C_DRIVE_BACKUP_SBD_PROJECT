@@ -1,0 +1,97 @@
+use schema NUMERATOR
+
+create table HTAS_BRAND_SHARE_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+create table OUTDOOR_BRAND_SHARE_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+create table Power_Tools_Brand_Share_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+create table Total_Tools_Outdoors_no_Lighting_Brand_Share_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+create table Quarterly_Brand_Share_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+create table Rolling_Twelve_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
