@@ -1,0 +1,48 @@
+import pandas as pd
+import sys
+import yaml
+import logging
+from generalapi_logger import *
+from datetime import date, datetime
+import requests_cache
+from time import sleep
+from genericAPI import genericAPI as genapi
+from genericAPI import CustomException
+from datetime import datetime, timedelta, date
+import datetime
+
+#now = datetime.now().strftime('%Y%m%d%H%M%S')
+#my_logger = get_logger('ProcessExcelStaticFile_{}.log'.format(now))
+
+def main():
+    try:
+        processName = sys.argv[1]
+        print(processName)
+        excelFileName, srcRecName, snowflakeConnection = genapi().getExcelFileLoadInfo(processName)
+        print(excelFileName)
+
+        #my_logger.info("File Name is %s", excelFileName)
+        snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName = genapi().get_snowflake_config(
+            snowflakeConnection)
+        base_dfs = pd.read_excel(excelFileName, sheet_name='Direct', index_col=False)
+        all_dfs=base_dfs[base_dfs['Segment'] == 'Tools and Home Improvement']
+
+
+        for key in all_dfs.keys():
+            df_sheet = all_dfs
+            df_sheet.columns = map(lambda x: str(x).upper(), df_sheet.columns)
+            df_sheet.columns = df_sheet.columns.str.replace(' ', '_')
+            df_sheet = genapi().df_include_landing_audit_columns(df_sheet, srcRecName)
+            df_sheet = genapi().fix_date_cols(df_sheet)
+
+        print(df_sheet)
+        genapi().write_snowflake_data(snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse,
+                                          snowflakeDatabase, snowflakeSchema, snowflakeTableName, all_dfs)
+    except Exception as e:
+        #my_logger.info("An exception occured.")
+        print('An Exception occured in main function.', e)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
