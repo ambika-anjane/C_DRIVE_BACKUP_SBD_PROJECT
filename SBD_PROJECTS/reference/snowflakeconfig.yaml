@@ -1,0 +1,17 @@
+snowflakeBasicConnection:
+     snowflakeSecretName: eon/dev/databases/snowflake
+     snowflakeRegionName: us-east-1
+
+econMnemonicMappingConnection:
+  snowflakeSchema: SI_MARKETPLACE_REF_DATA
+  snowflakeTableName: SI_ECON_MNEMONIC_MAPPING_LANDING
+
+brandManufacturerMappingConnection:
+  snowflakeSchema: SI_MARKETPLACE_REF_DATA
+  snowflakeTableName: SI_BRAND_MANUFACTURER_MAPPING_LANDING
+
+categoryMarketSizeConnection:
+  snowflakeSchema: SI_MARKETPLACE_REF_DATA
+  snowflakeTableName: SI_CATEGORY_MARKET_SIZE_LANDING
+
+

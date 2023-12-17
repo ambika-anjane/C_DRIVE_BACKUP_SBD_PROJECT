@@ -1,0 +1,35 @@
+brandManufacturerMapping:
+  flatFileName: SI_BRAND_MANUFACTURER_MAPPING.csv
+  srcRecName: SI_BRAND_MANUFACTURER_MAPPING_LANDING
+  snowflakeConnection: brandManufacturerMappingConnection
+  Required_Columns:
+    - BRAND
+    - MANUFACTURER
+    
+categoryMarketSize:
+  flatFileName: SI_CATEGORY_MARKET_SIZE.csv
+  srcRecName: SI_CATEGORY_MARKET_SIZE_LANDING
+  snowflakeConnection: categoryMarketSizeConnection
+  Required_Columns:
+    - DATE
+    - CATEGORY
+    - METRIC	
+    - VALUE
+
+econMnemonicMapping:
+  flatFileName: SI_ECON_MNEMONIC_MAPPING.csv
+  srcRecName: SI_ECON_MNEMONIC_MAPPING_LANDING
+  snowflakeConnection: econMnemonicMappingConnection
+  Required_Columns:
+    - MNEMONIC_KEY
+    - MNEMONIC_CATEGORY
+    - SOURCE_SYSTEM
+    - MNEMONIC_DESCRIPTION
+     
+
+
+
+
+
+
+
