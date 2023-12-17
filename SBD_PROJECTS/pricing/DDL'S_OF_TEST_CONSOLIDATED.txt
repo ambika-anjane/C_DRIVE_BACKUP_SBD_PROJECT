@@ -1,0 +1,58 @@
+create or replace TABLE US (
+	ORIG_SYSTEM VARCHAR(50),
+	FILLER VARCHAR(50),
+	SOLD_TO_CUSTOMER_NBR VARCHAR(50),
+	STORE_NUMBER VARCHAR(100),
+	CUSTOMER_MATERIAL VARCHAR(50),
+	UPC_NUMBER VARCHAR(50),
+	MATERIAL_NUMBER VARCHAR(50),
+	RETAIL__EXTD_DOLLARS NUMBER(38,10),
+	POS_QTY NUMBER(10,0),
+	BOH_QTY NUMBER(10,0),
+	ON_ORDER_QTY NUMBER(10,0),
+	BEGINNING_DATE VARCHAR(15),
+	END_DATE VARCHAR(15),
+	LOADDTS TIMESTAMP_NTZ(9),
+	EVENTDTS VARCHAR(16777216),
+	REC_SRC VARCHAR(16777216),
+	ROW_SQN NUMBER(38,0),
+	HASH_FULL_RECORD VARCHAR(128)
+);
+
+user: "{{ env_var('DBT_DEV_USER') }}"
+      password: "{{ env_var('DBT_DEV_PASSWORD') }}"
+
+jaffle:
+  outputs:
+    dev:
+      account: hw46976.ap-southeast-1
+      database: RAW
+      password: Snowflake#22
+      role: ACCOUNTADMIN
+      schema: JAFFLE_SHOP
+      threads: 4
+      type: snowflake
+      user: snowflake22
+      warehouse: COMPUTE_WH
+  target: dev
+
+	
+snowflake account:
+default:
+  target: edw_pricing
+  outputs:
+
+  
+
+    edw_pricing: # User-Password config
+      type: snowflake
+      account: sbd_caspian.us-east-1
+      user: Ambika.shyam@sbdinc.com
+      authenticator: externalbrowser
+      role: DEV_EDWBUILD_RW
+      database: DEV_EDW
+      warehouse: DEV_EDW_WH
+      schema: CONSOLIDATED
+      threads: 5
+      client_session_keep_alive: False
+      query_tag: dbt_special
