@@ -1,10 +1,13 @@
+###
 import pandas as pd
 import yaml
 from snowflake.connector.pandas_tools import write_pandas
 import snowflake.connector as sf
 import os
 import sys
+from datetime import datetime
 from datetime import datetime, timedelta, date
+##import datetime
 import requests
 import io
 from requests.exceptions import ConnectionError
@@ -12,6 +15,13 @@ import base64
 import boto3
 import json
 from botocore.exceptions import ClientError
+from pytz import timezone
+from time import sleep
+import ast
+
+tz = timezone('EST')
+##currentTime = datetime.datetime.now(tz=None)
+currentTime = datetime.now(tz=None)
 
 class CustomException(Exception):   
    def __init__(self, value=None, *args, **kwargs):
@@ -58,12 +68,11 @@ class genericAPI(object):
     @classmethod
     def df_include_landing_audit_columns(cls, df, rec_src_name):
         df['REC_SRC'] = rec_src_name
-        df['LOADDTS'] = datetime.now(tz=None)
-        df['EVENTDTS'] = datetime.now(tz=None)
+        df['LOADDTS'] = currentTime
+        df['EVENTDTS'] = currentTime
         df['ROW_SQN'] = df.groupby(['LOADDTS']).cumcount()+1
         
         return df    
-    
 
     @classmethod
     def read_csv_data_from_url_folder(cls, csv_url):
@@ -130,19 +139,65 @@ class genericAPI(object):
            snowflakeConnection = doc[sectionValue]["snowflakeConnection"]
         
            return csvUrl, secRecName, snowflakeConnection
-    
+
+    @classmethod
+    def loadFromFlatFile(cls, sectionValue):
+
+       with open('loadFromFlatFile.yaml', 'r') as f:
+           doc = yaml.safe_load(f)
+           csvUrl = doc[sectionValue]["flatFileName"]
+           secRecName = doc[sectionValue]["srcRecName"]
+           snowflakeConnection = doc[sectionValue]["snowflakeConnection"]
+           seperatorSymbol = doc[sectionValue]["seperatorSymbol"]
+        
+           return csvUrl, secRecName, snowflakeConnection, seperatorSymbol 
+      
     @classmethod
     def getExcelFileLoadInfo(cls, sectionValue):
        with open('loadFromExcel.yaml', 'r') as f:
            doc = yaml.safe_load(f)
            excelFileName = doc[sectionValue]["excelFileName"]
            srcSheet = doc[sectionValue]["srcSheet"]
+           requiredColumns = doc[sectionValue]["requiredColumns"]
            srcRecName = doc[sectionValue]["srcRecName"]
-           Required_Columns = doc[sectionValue]["Required_Columns"]
            snowflakeConnection = doc[sectionValue]["snowflakeConnection"]
+           
+           return excelFileName, srcSheet, srcRecName, requiredColumns, snowflakeConnection
+
+    @classmethod
+    def getMoodysBasket(cls, sectionValue):
+       with open('Moodys.yaml', 'r') as f:
+           doc = yaml.safe_load(f)
+           ACC_KEY = doc[sectionValue]["ACC_KEY"]
+           ENC_KEY = doc[sectionValue]["ENC_KEY"]
+           BASKET_NAME = doc[sectionValue]["BASKET_NAME"]
         
-           return excelFileName, srcSheet, srcRecName, Required_Columns, snowflakeConnection
+           return ACC_KEY, ENC_KEY, BASKET_NAME 
+
+    @classmethod
+    def getIHSMarkitInfo(cls, sectionValue):
+       with open('ihsMarkit.yaml', 'r') as f:
+           doc = yaml.safe_load(f)
+           USERNAME = doc[sectionValue]["USERNAME"]
+           PASSWORD = doc[sectionValue]["PASSWORD"]
+        
+           return USERNAME, PASSWORD    
     
+    @classmethod
+    def getNumeratorFileLoadInfo(cls, sectionValue):
+       with open('loadFromExcel.yaml', 'r') as f:
+           doc = yaml.safe_load(f)
+           excelFileName = doc[sectionValue]["excelFileName"]
+           srcRecName = doc[sectionValue]["srcRecName"]
+           snowflakeConnection = doc[sectionValue]["snowflakeConnection"]
+           startingHeaderLine = doc[sectionValue]["startingHeaderLine"]
+           sheet1ColumnNumber = doc[sectionValue]['sheet1ColumnNumber']
+           sheet3ColumnNumber = doc[sectionValue]['sheet3ColumnNumber']
+           requiredColumns = doc[sectionValue]['requiredColumns']
+        
+           return excelFileName, srcRecName, snowflakeConnection, startingHeaderLine, sheet1ColumnNumber, sheet3ColumnNumber, requiredColumns
+
+
     @classmethod    
     def get_Cases_Data(cls, dateslist, base_url):
        df_final_downloaded_csv = pd.DataFrame()
@@ -193,6 +248,20 @@ class genericAPI(object):
     @classmethod
     def executeSnowflakeQuery(cls, query):
         snowflakeAccount,  snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName = genericAPI.get_snowflake_config('acquisitionConfigConnection')
+        
+        conn = sf.connect(user=snowflakeUser,
+                          password=snowflakePass,
+                          account=snowflakeAccount,
+                          warehouse=snowflakeWarehouse,
+                          database=snowflakeDatabase,
+                          schema=snowflakeSchema)
+        
+        cursor = conn.cursor()
+        cursor.execute(query)
+
+    @classmethod
+    def executeSnowflakeQueryParm(cls, query, snowflakeConnection):
+        snowflakeAccount,  snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName = genericAPI.get_snowflake_config(snowflakeConnection)
         
         conn = sf.connect(user=snowflakeUser,
                           password=snowflakePass,
@@ -267,26 +336,29 @@ class genericAPI(object):
            snowflakeSchema = doc[sectionValue]["snowflakeSchema"]
            snowflakeTableName = doc[sectionValue]["snowflakeTableName"]
         
-           return snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName
+           return snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName    
 
     @classmethod
-    def getNoaaSeriesUnits(cls):
-      snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName = genericAPI.get_snowflake_config('NoaaSeriesunitsConnection')
-      snowflakeAccount = 'sbd_caspian.us-east-1'
-      snowflakeUser = 'DEV_INGEST'
-      snowflakePass = 'poonooD9fooBeth9'
-      snowflakeWarehouse = 'DEV_INGEST_WH'
-      snowflakeDatabase = 'DEV_RAW'
-      snowflakeSchema = 'NOAA_WEATHER'
-      ##snowflakeTableName = 'IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES_LANDING'
-      ##snowflakeTableName = 'IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING'
-      snowflakeTableName = 'STORM_LOCATIONS_LANDING'
-      print('testing 5')
-      conn = sf.connect(user=snowflakeUser,
-      password=snowflakePass,
-      account=snowflakeAccount,
-      warehouse=snowflakeWarehouse,
-      database=snowflakeDatabase,
-      schema=snowflakeSchema)
-      print('testing 6')
-      return snowflakeAccount, snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName
+    def getFredSeriesUnits(cls):
+        snowflakeAccount,  snowflakeUser, snowflakePass, snowflakeWarehouse, snowflakeDatabase, snowflakeSchema, snowflakeTableName = genericAPI.get_snowflake_config('fredSeriesUnitsConnection')
+        
+        conn = sf.connect(user=snowflakeUser,
+                          password=snowflakePass,
+                          account=snowflakeAccount,
+                          warehouse=snowflakeWarehouse,
+                          database=snowflakeDatabase,
+                          schema=snowflakeSchema)
+        
+
+  
+        query_text = 'SELECT * FROM ' + snowflakeSchema + '.' + snowflakeTableName +';'
+        query = (query_text)
+        cursor = conn.cursor()
+        cursor.execute(query)
+        df_fredSeriesUnits = pd.DataFrame.from_records(iter(cursor), columns=[x[0] for x in cursor.description])
+        
+        return df_fredSeriesUnits
+
+
+    
+               

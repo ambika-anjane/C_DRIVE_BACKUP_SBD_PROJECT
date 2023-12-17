@@ -1,0 +1,108 @@
+covidVaccineUSConnection:
+   csvUrl: https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/time_series/people_vaccinated_us_timeline.csv
+   srcRecName: COVID_VACCINATED_US
+   snowflakeConnection: covidVaccinatedUSConnection
+
+covidVaccineGlobalConnection:
+   csvUrl: https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_global.csv
+   srcRecName: COVID_VACCINATED_GLOBAL
+   snowflakeConnection: covidVaccinatedGlobalConnection
+
+covidCasesUSConnection:
+   csvUrl: https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/
+   srcRecName: COVID_CASES_US
+   snowflakeConnection: covidCasesUsConnection
+
+covidCasesGlobalConnection:
+   csvUrl: https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/
+   srcRecName: COVID_CASES_GLOBAL
+   snowflakeConnection: covidCasesGlobalConnection
+
+ihsPricingAndPurchasingHistoricalSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Pricing_and_Purchasing_Historical_API_Data
+   srcRecName: IHSMARKIT_PRICING_PURCHASE_HISTORICAL
+   snowflakeConnection: ihsPricingAndPurchasingHistoricalSeriesConnection
+
+ihsEconomicUSConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/US_Economy_Historical_API_Data
+   srcRecName: IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES
+   snowflakeConnection: ihsEconomicUSConnection
+
+ihsChinaRegionalConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/China_Regional_API_Data
+   srcRecName: IHS_CHINA_REGIONAL_SERIES
+   snowflakeConnection: ihsChinaRegionalConnection
+
+ihsChinaRegionalHistoricalConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/China_Regional_Historical_API_Data 
+   srcRecName: IHS_CHINA_REGIONAL_HISTORICAL_SERIES 
+   snowflakeConnection: ihsChinaRegionalHistoricalConnection
+
+ihsFinancialMarketsHistoricalConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Financial_Markets_Historical_API_Data  
+   srcRecName: IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES 
+   snowflakeConnection: ihsFinancialMarketsHistoricalConnection
+
+ihsEconomicGlobalEconomyHistoricalSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Global_Economy_API_Data  
+   srcRecName: IHS_ECONOMIC_GLOBAL_ECONOMY_HISTORICAL_SERIES 
+   snowflakeConnection: ihsEconomicGlobalEconomyHistoricalSeriesConnection
+
+ihsEconomicGlobalEconomySeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Global_Economy_API_Data  
+   srcRecName: IHS_ECONOMIC_GLOBAL_ECONOMY_SERIES 
+   snowflakeConnection: ihsEconomicGlobalEconomySeriesConnection
+
+ihsEconomicGlobalEconomyNewSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Global_Economy_New_API_Data   
+   srcRecName: IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES 
+   snowflakeConnection: ihsEconomicGlobalEconomyNewSeriesConnection
+
+ihsPricingAndPurchasingForecastSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Pricing_and_Purchasing_Forecast_API_Data    
+   srcRecName: IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES 
+   snowflakeConnection: ihsPricingAndPurchasingForecastSeriesConnection
+
+ihsEconomicUsEconomySeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/US_Economy_API_Data     
+   srcRecName: IHS_ECONOMIC_US_ECONOMY_SERIES 
+   snowflakeConnection: ihsEconomicUsEconomySeriesConnection
+
+ihsEconomicWorldMarketMonitorSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/World_Market_Monitor_API_Data     
+   srcRecName: IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES 
+   snowflakeConnection: ihsEconomicWorldMarketMonitorSeriesConnection
+
+ihsEconomicConstructionCanadaSeriesConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Construction_Canada_API_Data      
+   srcRecName: IHS_ECONOMIC_CONSTRUCTION_CANADA_SERIES 
+   snowflakeConnection: ihsEconomicConstructionCanadaSeriesConnection
+
+ihsEconomicConstructionGlobalConnection:
+   csvUrl: https://api.connect.ihsmarkit.com/dataplatform/v1/odata/Global_Economy_Historical_API_Data       
+   srcRecName: IHS_ECONOMIC_CONSTRUCTION_GLOBAL 
+   snowflakeConnection: ihsEconomicConstructionGlobalConnection
+
+
+fredSeriesConnection:
+   csvUrl: https://api.stlouisfed.org/fred/series
+   srcRecName: FRED_DATA
+   snowflakeConnection: fredSeriesConnection
+
+NoaaStormEventDetailsConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORM_EVENTS
+   snowflakeConnection: NoaaStormEventDetailsConnection
+
+NoaaStormLocationsConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORM_LOCATIONS
+   snowflakeConnection: NoaaStormLocationsConnection
+
+NoaaStormFatalityConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORM_FATALITIES
+   snowflakeConnection: NoaaStormFatalityConnection
+
+
+
