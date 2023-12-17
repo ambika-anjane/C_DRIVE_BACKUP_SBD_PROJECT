@@ -1,0 +1,35 @@
+covidVaccineUSConnection:
+   csvUrl: https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/time_series/people_vaccinated_us_timeline.csv
+   srcRecName: COVID_VACCINATED_US
+   snowflakeConnection: covidVaccinatedUSConnection
+
+covidVaccineGlobalConnection:
+   csvUrl: https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_global.csv
+   srcRecName: COVID_VACCINATED_GLOBAL
+   snowflakeConnection: covidVaccinatedGlobalConnection
+
+covidCasesUSConnection:
+   csvUrl: https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/css	e_covid_19_data/csse_covid_19_daily_reports_us/
+   srcRecName: COVID_CASES_US
+   snowflakeConnection: covidCasesUsConnection
+
+covidCasesGlobalConnection:
+   csvUrl: https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/
+   srcRecName: COVID_CASES_GLOBAL
+   snowflakeConnection: covidCasesGlobalConnection
+
+NoaaStormEventDetailsConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORMEVENTS_DETAILS_LANDING
+   snowflakeConnection: NoaaStormEventDetailsConnection
+
+NoaaStormLocationsConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORM_LOCATIONS_LANDING
+   snowflakeConnection: NoaaStormLocationsConnection
+
+
+NoaaStormFatalityConnection:
+   csvUrl: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+   srcRecName: STORM_FATALITIES_LANDING
+   snowflakeConnection: NoaaStormFatalityConnection

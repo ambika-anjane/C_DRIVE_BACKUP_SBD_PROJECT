@@ -1,0 +1,65 @@
+snowflakeBasicConnection:
+     snowflakeSecretName: sbd/caspian/dev/operations/db/sbd_caspian_snowflake
+     snowflakeRegionName: us-east-1
+
+yahooDataConnection:
+     snowflakeSchema: YAHOOFINANCE
+     snowflakeTableName: STOCKPRICE_ETF_LANDING
+     
+meteoStatStationsConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: METEOSTAT_STATIONS_LANDING   
+
+meteoFinalConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: FINALWEATHERDATA_LANDING
+
+meteoLatLongConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: LATLONGBYCITY_US_LANDING
+
+fredSeriesConnection:
+     snowflakeSchema: FRED
+     snowflakeTableName: FRED_SERIES_DEMAND_SENSING_LANDING
+
+fredObservationsConnection:
+     snowflakeSchema: FRED
+     snowflakeTableName: FRED_OBSERVATIONS_DEMAND_SENSING_LANDING     
+
+covidVaccinatedUSConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_VACCINATED_US_LANDING
+
+covidVaccinatedGlobalConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_VACCINE_GLOBAL_LANDING
+
+covidCasesGlobalConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_CASES_GLOBAL_LANDING
+
+covidCasesUsConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_CASES_US_LANDING
+     
+acquisitionConfigConnection:
+     snowflakeSchema: CONFIG_TABLES
+     snowflakeTableName: ACQUISITION_CONFIG
+
+stormEventsDetailsConnection:
+     snowflakeSchema: NOAA_WEATHER
+     snowflakeTableName: STORMEVENTS_DETAILS_LANDING
+
+stormFatalitiesConnection:
+     snowflakeSchema: NOAA_WEATHER
+     snowflakeTableName: STORM_FATALITIES_LANDING
+
+stormLocationsConnection:
+     snowflakeSchema: NOAA_WEATHER
+     snowflakeTableName: STORM_LOCATIONS_LANDING
+
+NoaaSeriesUnitsConnection:
+     snowflakeSchema: NOAA_WEATHER
+     snowflakeTableName: STORM_LOCATIONS_LANDING
+
+     
