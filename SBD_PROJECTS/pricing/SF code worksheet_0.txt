@@ -1,0 +1,786 @@
+"DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"select * from "DEV_RAW"."METEOSTAT"."FINALWEATHERDATA"
+create table Storm_locations   
+ (
+ YEARMONTH INT ,
+ EPISODE_ID INT comment 'ID assigned by NWS to denote the storm episode; Episodes may contain multiple Events The occurrence of storms and other significant weather phenomena having sufficient intensity to cause loss of life, injuries, significant property damange, and or disruption to commerce.',
+ EVENT_ID INT comment 'ID assigned by NWS for each individual storm event contained within a storm episode; links the record with the same event in the storm_event_details, storm_event_locations and storm_event_fatalities tables_'   ,
+ LOCATION_INDEX INT  comment 'Number assigned by NWS to specific locations within the same Storm event. Each event’s sequentially increasing location index number will have a corresponding lat/lon point',
+ RANGE Float comment 'Distance (to the tenth of a mile) to the geographical center or primary post office of a particular village/city',
+ AZIMUTH String comment '16-point compass direction from the reference point is documented in the Storm Data software location database table of > 130,000 locations',
+ LOCATION  String comment 'The name of city, town or village from which the range is calculated and the azimuth is determined.',
+ LATITUDE float comment 'The latitude where the event occurred (Signed negative (-) if it’s in the southern hemisphere) ',
+ LONGITUDE float comment 'The longitude where the event occurred (Signed negative (-) if it’s in the western hemisphere) ',
+ LAT2   String ,
+ LON2  String,
+ Snapshot_date Datetime comment 'Date of data snapshot');
+ 
+ use schema moodys
+ select * from "DEV_RAW"."MOODYS"."MOODYS_ALL_INDICATORS_CHANGES" where to_date(LOADDTS) is null
+ 
+ create table storm_fatalities 
+ (
+ FAT_YEARMONTH INT comment 'ID assigned by NWS to denote the individual fatality that occurred',
+ FAT_DAY INT,
+ FAT_TIME INT,
+ FATALITY_ID INT comment 'ID assigned by NWS to denote the individual fatality that occurred)',
+ EVENT_ID INT comment 'ID assigned by NWS for each individual storm event contained within a storm episode links the record with the same event in the storm_event_details, storm_event_locations and storm_event_fatalities tables.',
+ FATALITY_TYPE String comment '(D = Direct Fatality; I = Indirect Fatality; assignment of this is determined by NWS software details below are from NWS Directve 10-1605 at http://www.nws.noaa.gov/directives/sym/pd01016005curr.pdf',
+ FATALITY_DATE	DateTime comment 'MM/DD/YYYY hh:mm (time is usually 00.00)',
+ FATALITY_AGE	INT	comment 	'The age in years of the fatality (sometimes ‘null’ if unknown)',
+ FATALITY_SEX	string comment 'The gender of the fatality (sometimes ‘null’ if unknown)',
+ FATALITY_LOCATION	String,
+ EVENT_YEARMONTH	INT	,
+ Snapshot_date	Datetime comment 'Date of data snapshot'
+ );
+
+
+
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_LANDING"
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_QUARANTINE"
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_HISTORY"
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_VALIDATED" 
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_CHANGES"
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US"
+
+
+
+
+ grant usage on schema "DEV_RAW"."NOAA_WEATHER" to role public
+
+grant select  on table  "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS"to role public
+grant select  on table  "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS"to role public
+
+use schema numerator
+
+create table MPM_EXTRACT_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+QUARTERLY_SCORECARD_STORES VARCHAR comment 'Retailer split',
+BRAND VARCHAR comment 'Brand parameter for data pull',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,QUARTERLY_SCORECARD_STORES,BRAND,TIME_PERIOD,TIME_COVERAGE));
+
+drop table MPM_EXTRACT_LANDING
+
+create table DF1_RETAILER_SPLIT_ON_OVERALL_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+RETAILER VARCHAR comment 'Retailer split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,RETAILER,TIME_PERIOD,TIME_COVERAGE));
+
+create table DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors_landing
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+RETAILER VARCHAR comment 'Retailer split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,RETAILER,TIME_PERIOD,TIME_COVERAGE));
+
+
+drop table DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors			 
+
+create table DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing										 			 
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+create table DF2_REGION_SPLIT_ON_OVERALL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+
+drop table DF2_REGION_SPLIT_ON_OVERALL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS
+
+create table DF1_RETAILER_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+RETAILER VARCHAR comment 'Retailer split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,RETAILER,TIME_PERIOD,TIME_COVERAGE));
+
+drop table DF1_Retailer_split_on_category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws				
+
+create table DF2_RETAILER_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+RETAILER VARCHAR comment 'Retailer split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,RETAILER,TIME_PERIOD,TIME_COVERAGE));
+
+drop table DF2_RETAILER_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS
+
+use schema numerator
+
+create table DF1_Region_split_on_Category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws_landing										 			 
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+create table DF2_REGION_SPLIT_ON_OVERALL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+select * from DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing;
+create table DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+SELECT * FROM DEV_RAW.NUMERATOR.TABLES IS df1
+
+SELECT * FROM DEV_RAW.NUMERATOR
+ 
+show grants on DF1_Region_split_on_Category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+
+use schema numerator
+
+select count(*) as "Number_Of_Records_Hand_Tools_and_OPE_SBD_Market_Share_Quarterly" from DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing
+select * from  Hand_Tools_and_OPE_SBD_Market_Share_Quarterly_landing
+select * from Power_Tools_and_PTA_SBD_Market_Share_Quarterly_landing 
+select * from Shopper_Metric_Hand_Tools_and_OPE_landing
+select * from Shopper_Metric_Power_Tools_and_PTA_Landing
+select * from DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Granular_landing
+select * from DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorage_Outdoors
+select * from DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select * from DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors_landing
+
+
+select * from DF1_Region_split_on_Category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select * from DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing
+
+select * from DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select count(*) as "Number_Of_Records_Hand_Tools_and_OPE_SBD_Market_Share_Quarterly" from DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors_landing
+select * from DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors_landing
+
+select * from DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select * from DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors_landing
+select * from DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select * from DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors_landing
+select * from mpm_extract_landing
+select count(*) as "Number of Records in mpm_extract_landing " from   mpm_extract_landing
+
+use schema numerator
+select * from DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing;
+select get_ddl('table','DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing')
+GET_DDL('TABLE','DF1_RETAILER_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING')
+create or replace TABLE DF1_RETAILER_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING (   METRIC VARCHAR(16777216) NOT NULL COMMENT 'Market metric measured by Numerator',   PRODUCT_AND_CATEGORY VARCHAR(16777216) COMMENT 'Category parameter for data pull',   CATEGORY_GROUP VARCHAR(16777216) NOT NULL COMMENT 'Category group parameter split for data pull',   CATEGORY VARCHAR(16777216) NOT NULL COMMENT 'Category split',   TIME_SCALE VARCHAR(16777216) COMMENT 'Scale of time frame (e.g. 1 Month Ending & Quarter Ending)',   TIME_PERIOD VARCHAR(16777216) NOT NULL COMMENT 'Last date to denote end of time_scale',   TIME_COVERAGE VARCHAR(16777216) NOT NULL COMMENT 'Coverage of time period (e.g. Rolling)',   VALUE VARCHAR(16777216) COMMENT 'Metric value per the associate parameters',   LOADDTS TIMESTAMP_NTZ(9),   EVENTDTS VARCHAR(16777216),   REC_SRC VARCHAR(16777216),   ROW_SQN NUMBER(38,0),   RETAILER VARCHAR(1000)  );
+
+select * from DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors_landing;
+select GET_DDL('TABLE','DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors_landing')
+GET_DDL('TABLE','DF2_RETAILER_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS_LANDING')
+create or replace TABLE DF2_RETAILER_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS_LANDING (   METRIC VARCHAR(16777216) NOT NULL COMMENT 'Market metric measured by Numerator',   PRODUCT_AND_CATEGORY VARCHAR(16777216) COMMENT 'Category parameter for data pull',   CATEGORY_GROUP VARCHAR(16777216) NOT NULL COMMENT 'Category group parameter split for data pull',   RETAILER VARCHAR(16777216) NOT NULL COMMENT 'Retailer split',   TIME_SCALE VARCHAR(16777216) COMMENT 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',   TIME_PERIOD VARCHAR(16777216) NOT NULL COMMENT 'Last date to denote end of time_scale',   TIME_COVERAGE VARCHAR(16777216) NOT NULL COMMENT 'Coverage of time period (e.g. Rolling)',   VALUE VARCHAR(16777216) COMMENT 'Metric value per the associated parameters',   LOADDTS VARCHAR(16777216),   EVENTDTS VARCHAR(16777216),   REC_SRC VARCHAR(16777216),   ROW_SQN VARCHAR(16777216),   CATEGORY VARCHAR(1000),   primary key (METRIC, CATEGORY_GROUP, RETAILER, TIME_PERIOD, TIME_COVERAGE)  );
+
+
+select GET_DDL('TABLE','DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors_landing')
+GET_DDL('TABLE','DF2_REGION_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING')
+create or replace TABLE DF2_REGION_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING (   METRIC VARCHAR(16777216) NOT NULL COMMENT 'Market metric measured by Numerator',   PRODUCT_AND_CATEGORY VARCHAR(16777216) COMMENT 'Category parameter for data pull',   CATEGORY_GROUP VARCHAR(16777216) NOT NULL COMMENT 'Category group parameter split for data pull',   CENSUS_REGION VARCHAR(16777216) NOT NULL COMMENT 'US Region split',   TIME_SCALE VARCHAR(16777216) COMMENT 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',   TIME_PERIOD VARCHAR(16777216) NOT NULL COMMENT 'Last date to denote end of time_scale',   TIME_COVERAGE VARCHAR(16777216) NOT NULL COMMENT 'Coverage of time period (e.g. Rolling)',   VALUE VARCHAR(16777216) COMMENT 'Metric value per the associated parameters',   LOADDTS VARCHAR(16777216),   EVENTDTS VARCHAR(16777216),   REC_SRC VARCHAR(16777216),   ROW_SQN VARCHAR(16777216),   CATEGORY VARCHAR(1000),   primary key (METRIC, CATEGORY_GROUP, CENSUS_REGION, TIME_PERIOD, TIME_COVERAGE)  );
+
+
+
+use schema numerator
+use schema moodys
+select * from moodys_all_indicators
+DESC table MOODYS_ALL_INDICATORS_LANDING
+select * from moodys_all_indicators_landing order by date asc
+select * from moodys_all_indicators_landing 
+select* from moodys_all_indicators_landing 
+select distinct(eventdts) from Hand_Tools_and_OPE_SBD_Market_Share_Quarterly_landing
+select * from DF1_Region_split_on_Category_of_Power_Tools_PTA_landing
+select count(*) as "Records in DF1_Region_split_on_Category_of_Power_Tools_PTA_landing " from DF1_Region_split_on_Category_of_Power_Tools_PTA_landing
+
+select * from DF1_Region_split_on_Category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing
+select count(*) as "Number of records in DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors_landing" from DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors_landing
+
+select * from Shopper_Metric_Hand_Tools_OPE_landing
+use schema numerator
+set source_system = 'METEOSTAT'
+
+
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+select *  from  "DEV_RAW"."MOODYS"."MOODYS_ALL_INDICATORS_LANDING"
+select * from  "DEV_RAW"."MOODYS"."MOODYS_ALL_INDICATORS_LANDING" order by date asc
+
+create table DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws_landing										 			 
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+
+create schema SIMILARWEB
+use schema similarweb
+
+create table ONLINE_TRAFFIC_LANDING(
+Time_Period VARCHAR comment 'The time for when the values represent',
+Domain VARCHAR comment 'Website URL that the information was gathered from',
+Channel VARCHAR comment 'Type of media',
+Traffic_Share VARCHAR comment 'Percentage of traffic based upon domain',
+Channel_Traffic VARCHAR comment 'How many views per line item',
+Avg_Visit_Duration VARCHAR comment 'How long a user was on the domain',
+Pages_Visit VARCHAR comment 'Average number of pages visited by the user',
+Bounce_Rate VARCHAR comment 'Percentage of users who enter a site and leave without doing anything else',
+LOADDTS	TIMESTAMP_NTZ(9),
+EVENTDTS VARCHAR(16777216),
+REC_SRC	VARCHAR(16777216),
+ROW_SQN	NUMBER(38,0),
+PRIMARY KEY (Time_Period,Domain,Channel));
+
+drop table CONVERSION_RATE_LANDING
+select * from ONLINE_TRAFFIC_LANDING
+
+create table CONVERSION_RATE_LANDING(
+Domains VARCHAR comment 'Website URL that the information was gathered from ',
+Time_Period  VARCHAR comment 'The time for when the values represent',
+Visits VARCHAR comment 'Number of total visits to domain ',
+Converted_Visits VARCHAR comment 'Number of converted visits at domain',
+Conversion_Rate VARCHAR comment 'Visits/Converted Visits',
+Segment VARCHAR comment 'Amazon Specific to identify ‘Tools and Home Improvement’ Category ',
+LOADDTS	TIMESTAMP_NTZ(9),
+EVENTDTS VARCHAR(16777216),
+REC_SRC	VARCHAR(16777216),
+ROW_SQN	NUMBER(38,0),
+PRIMARY KEY (Domains,Time_Period,Segment));
+
+use schema noaa_weather
+
+create table STORM_LOCATIONS_LANDING(
+YEARMONTH VARCHAR ,
+EPISODE_ID  VARCHAR comment 'ID assigned by NWS to denote the storm episode; Episodes may contain multiple Events The occurrence of storms and other significant weather phenomena having sufficient intensity to cause loss of life, injuries, significant property damange, and or disruption to commerce.',
+EVENT_ID VARCHAR comment 'ID assigned by NWS for each individual storm event contained within a storm episode; links the record with the same event in the storm_event_details, storm_event_locations and storm_event_fatalities tables_',
+LOCATION_INDEX VARCHAR comment 'Number assigned by NWS to specific locations within the same Storm event. Each event’s sequentially increasing location index number will have a corresponding lat/lon point',
+RANGE VARCHAR comment 'Distance (to the tenth of a mile) to the geographical center or primary post office of a particular village/city',
+AZIMUTH VARCHAR comment '16-point compass direction from the reference point is documented in the Storm Data software location database table of > 130,000 locations',
+LOCATION VARCHAR comment 'The name of city, town or village from which the range is calculated and the azimuth is determined.',  
+LATITUDE VARCHAR comment 'The latitude where the event occurred (Signed negative (-) if it’s in the southern hemisphere)',
+LONGITUDE VARCHAR comment 'The longitude where the event occurred (Signed negative (-) if it’s in the western hemisphere)',
+LAT2 VARCHAR,
+LON2 VARCHAR,
+Snapshot_date VARCHAR comment 'Date of data snapshot',
+LOADDTS	TIMESTAMP_NTZ(9),
+EVENTDTS VARCHAR(16777216),
+REC_SRC	VARCHAR(16777216),
+ROW_SQN	NUMBER(38,0),
+PRIMARY KEY (EVENT_ID,LOCATION_INDEX));
+
+create table STORM_FATALITIES_LANDING(
+FAT_YEARMONTH VARCHAR comment 'ID assigned by NWS to denote the individual fatality that occurred)',
+FAT_DAY  VARCHAR,
+FAT_TIME VARCHAR,
+FATALITY_ID VARCHAR comment 'ID assigned by NWS to denote the individual fatality that occurred)',
+EVENT_ID VARCHAR comment 'ID assigned by NWS for each individual storm event contained within a storm episode; links the record with the same event in the storm_event_details, storm_event_locationsand storm_event_fatalities tables',
+FATALITY_TYPE VARCHAR comment '(D = Direct Fatality; I = Indirect Fatality; assignment of this is determined by NWS software; details below are from NWS Directve 10-1605 at http://www.nws.noaa.gov/directives/sym/pd01016005curr.pdf',
+FATALITY_DATE VARCHAR comment 'MM/DD/YYYY hh:mm (time is usually 00.00)',  
+FATALITY_AGE VARCHAR comment 'The age in years of the fatality (sometimes ‘null’ if unknown',
+FATALITY_SEX VARCHAR comment 'The gender of the fatality (sometimes ‘null’ if unknown)',
+FATALITY_LOCATION VARCHAR,
+EVENT_YEARMONTH VARCHAR,
+Snapshot_date VARCHAR comment 'Date of data snapshot',
+LOADDTS	TIMESTAMP_NTZ(9),
+EVENTDTS VARCHAR(16777216),
+REC_SRC	VARCHAR(16777216),
+ROW_SQN	NUMBER(38,0),
+PRIMARY KEY (EVENT_ID,FATALITY_ID));
+
+
+drop table STORMEVENTS_DETAILS_LANDING
+-- third table
+create table STORMEVENTS_DETAILS_LANDING(
+begin_yearmonth VARCHAR comment 'YYYYMM format -The year and month that the event began',
+begin_day  VARCHAR comment 'The day of the month that the event began',
+begin_time  VARCHAR comment 'Hhmm format -The time of day that the event began',
+end_yearmonth  VARCHAR comment 'The year and month that the event ended ',
+end_day VARCHAR comment 'The day of the month that the event ended' ,
+end_time VARCHAR  comment 'The time of day that the event ended',
+episode_id VARCHAR comment 'ID assigned by NWS to denote the storm episode; Episodes may contain multiple Events. The occurrence of storms and other significant weather phenomena having sufficient intensity to cause loss of life injuries, significant property damage, and or disruptionto commerce.',
+event_id  VARCHAR comment 'ID assigned by NWS for each individual storm event contained within a storm episode; links the record with the same event in the storm_event_details',
+state VARCHAR comment 'The state name where the event occurred (no State ID’s are included here; State Name is spelled out in ALL CAPS).',  
+state_fips  VARCHAR comment 'A unique number (State Federal Information Processing Standard) assigned to the county by the National Institute for Standards and Technology (NIST). ',
+year VARCHAR comment 'The four digit year for the event in this record.',
+month_name VARCHAR comment 'The name of the month for the event in this record (spelled out; not abbreviated).' ,
+event_type  VARCHAR comment 'The only events permitted in Storm Data are listed in Table 1 of Section 2.1.1 of NWS Directive 10-1605 at http://www.nws.noaa.gov/directives/sym/pd01016005curr.pdf.  The chosen event name should be the one that most accurately describes the meteorological event leading to fatalities, injuries, damage, etc.  However significant events, such as tornadoes, havingno impact or causing no damage, should also be included in Storm Data.',
+cz_type  VARCHAR comment 'Indicates whether the event happened in a (C) County/Parish, (Z) NWS Public Forecast Zone or (M) Marine)',
+cz_fips VARCHAR comment 'The county FIPS number is a unique number assigned to the county by the National Institute for Standards and Technology (NIST) or NWS Forecast Zone Number (See addendum) ',
+cz_name VARCHAR comment 'Count/Parish, Zone or Marine Name assigned to the county FIPS number or NWS Forecast Zone',
+wfo VARCHAR comment 'The National Weather Service Forecast Office’s area of responsibility (County Warning Area) in which the event occurred.',
+begin_date_time VARCHAR comment 'MM/DD/YYYY  hh:mm:ss (24 hour time usually in LST) ',
+cz_timezone  VARCHAR comment 'Time Zone for the County/Parish, Zone or Marine Name, Eastern Standard Time (EST), Central Standard Time (CST), Mountain Standard Time (MST)',
+end_date_time VARCHAR comment 'MM/DD/YYYY  hh:mm:ss (24 hour time usually in LST)',
+injuries_direct VARCHAR comment 'The number of injuries directly caused by the weather event',
+injuries_indirect VARCHAR comment 'The number of injuries indirectly caused by the weather event',
+deaths_direct  VARCHAR comment 'The number of deaths directly caused by the weather event',
+deaths_indirect  VARCHAR comment 'The number of deaths indirectly caused by the weather event.',
+damage_property  VARCHAR comment 'The estimated amount of damage to property incurred by the weather event (e.g. 10.00K = $10,000; 10.00M = $10,000,000)',
+damage_crops  VARCHAR comment 'The estimated amount of damage to crops incurred by the weather event (e.g. 10.00K = $10,000; 10.00M = $10,000,000)',
+source VARCHAR comment 'The source reporting the weather event (can be any entry; isn’t restricted in what’s allowed) ',
+magnitude  VARCHAR comment 'The measured extent of the magnitude type ~ only used for wind speeds (in knots) and hail size (in inches to the hundredth).',
+magnitude_type VARCHAR comment 'EG = Wind Estimated Gust; ES = Estimated Sustained Wind; MS = Measured Sustained Wind; MG = Measured Wind Gust (no magnitude is included for instances of hail).',
+flood_cause VARCHAR comment 'Reported or estimated cause of the flood.',
+category  VARCHAR comment 'Not used',
+tor_f_scale  VARCHAR comment 'Enhanced Fujita Scale describes the strength of the tornado based on the amount and type of damage caused by the tornado.  The F-scale of damage will vary in the destruction area; therefore, the highest value of the F-scale is recorded for each event.',
+tor_length  VARCHAR comment 'Length of the tornado or tornado segment while on the ground (in miles to the tenth)',
+tor_width   VARCHAR comment 'Width of the tornado or tornado segment while on the ground (in feet).',
+tor_other_wfo  VARCHAR comment 'Indicates the continuation of a tornado segment as it crossed from one National Weather Service Forecast Office to another.  The subsequent WFO identifier is provided within this field.',
+tor_other_cz_state   VARCHAR comment 'The two-character representation for the state name of the continuing tornado segment as it crossed from one county or zone to another.  The subsequent 2-Letter State ID is provided within this field',
+tor_other_cz_fips   VARCHAR comment 'The FIPS number of the county entered by the continuing tornadosegment as it crossed from one county to another.  The subsequent FIPS number is provided within this field. ',
+tor_other_cz_name   VARCHAR comment 'The FIPS name of the county entered by the continuing tornado segment as it crossed from one county to another.  The subsequent county or zone name is provided within this field in ALL CAPS.',
+begin_range   VARCHAR comment 'The distance to the nearest tenth of a mile, to the location refence below.',
+begin_azimuth  VARCHAR comment '16-point compass direction from the location referenced below.',
+begin_location VARCHAR comment 'The name of city, town or village from which the range is calculated and the azimuth is determined.',
+end_range VARCHAR,
+end_azimuth VARCHAR,
+end_location VARCHAR,
+begin_lat  VARCHAR comment 'The latitude in decimal degrees of the begin point of the event or damage path',
+begin_lon  VARCHAR comment 'The longitude in decimal degrees of the begin point of the event or damage path',
+end_lat VARCHAR comment 'The latitude in decimal degrees of the end point of the event or damage path. Signed negative (-) if in the southern hemisphere.',
+end_lon VARCHAR comment 'The longitude in decimal degrees of the end point of the event or damage path. Signed negative (-) if in the eastern hemisphere.',
+episode_narrative VARCHAR comment 'The episode narrative depicting the general nature and overall activity of the episode.  The National Weather Service creates the narrative. ',
+event_narrative  VARCHAR comment 'The event narrative provides descriptive details of the individual event.  The National Weather Service creates the narrative.',
+DATA_Source VARCHAR,
+Snapshot_date VARCHAR comment 'Date of data snapshot',
+LOADDTS	TIMESTAMP_NTZ(9),
+EVENTDTS VARCHAR(16777216),
+REC_SRC	VARCHAR(16777216),
+ROW_SQN	NUMBER(38,0),
+PRIMARY KEY (EVENT_ID));
+
+use schema NOAA_WEATHER
+truncate table "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING"
+select * from "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING" where BEGIN_YEARMONTH between '202001' and '202012' order by BEGIN_YEARMONTH asc
+ 
+select count(*) from  "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING"
+desc 
+
+truncate table "DEV_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+select * from  "DEV_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+select count(*) from  "DEV_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+
+truncate table "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+select * from  "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+select count(*) from  "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+
+
+use schema meteostat
+
+select * from  "DEV_RAW"."METEOSTAT"."FINALWEATHERDATA_LANDING"
+select count(*) as "Number of Records in FINALWEATHERDATA_LANDING" from  "DEV_RAW"."METEOSTAT"."FINALWEATHERDATA_LANDING"
+
+
+select * from  "DEV_RAW"."METEOSTAT"."LATLONGBYCITY_US_LANDING"
+select count(*) as "Number of Records in LATLONGBYCITY_US_LANDING" from  "DEV_RAW"."METEOSTAT"."LATLONGBYCITY_US_LANDING"
+
+select * from  "DEV_RAW"."METEOSTAT"."METEOSTAT_STATIONS_LANDING"
+select count(*) as "Number of Records in METEOSTAT_STATIONS_LANDING" from  "DEV_RAW"."METEOSTAT"."METEOSTAT_STATIONS_LANDING"
+
+set source_system = 'EUROMONITOR'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+use schema NOAA_weather
+
+select * from  "DEV_RAW"."FRED"."FRED_SERIES_OBSERVATIONS_DATA_LANDING"
+select count(*) as "Number of Records in FRED_SERIES_OBSERVATIONS_DATA_LANDING" from  "DEV_RAW"."FRED"."FRED_SERIES_OBSERVATIONS_DATA_LANDING"
+
+select * from  "TEST_RAW"."FRED"."FRED_SERIES_UNITS"
+select count(*) as "Number of Records in FRED_SERIES_UNITS" from  "TEST_RAW"."FRED"."FRED_SERIES_UNITS"
+
+select * from  "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS" where END_YEARMONTH = 202112
+select count(*) as "Number of Records in STORMEVENTS_DETAILS_LANDING" from  "DEV_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING"
+
+
+select * from  "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+select count(*) as "Number of Records in STORM_LOCATIONS_LANDING" from  "DEV_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+
+select * from  "DEV_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+select count(*) as "Number of Records in STORM_FATALITIES_LANDING" from  "DEV_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+
+use schema euromonitor
+create table BRAND_DATA_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Category parameter for data pull',
+CATEGORY_GROUP VARCHAR comment 'Category group parameter split for data pull',
+CENSUS_REGION VARCHAR comment 'US Region split',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+DATE VARCHAR,
+PRIMARY KEY (METRIC,CATEGORY_GROUP,CENSUS_REGION,TIME_PERIOD,TIME_COVERAGE));
+
+truncate table  "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select count(*) "Number of Records in DEV_RAW.EUROMONITOR.MARKET_SIZEIN_VALUE_LANDING" from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+
+alter table "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING" modify column POWERSOURCE_TYPE 
+
+alter table "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING" rename column POWERSOURCE_TYPE to Power Source Type;
+
+use schema SI_MARKETPLACE_REF_DATA
+truncate table "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_CATEGORY_MARKET_SIZE_LANDING"
+
+truncate table "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+
+
+
+use schema similarweb
+select * from "DEV_RAW"."SIMILARWEB"."CONVERSION_RATE_LANDING"
+select * from "DEV_RAW"."SIMILARWEB"."CONVERSION_RATE_LANDING"
+
+use schema euromonitor
+DROP table "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+create or replace table "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+(COUNTRY VARCHAR ,
+CATEGORY VARCHAR ,
+SUBCATEGORY VARCHAR ,
+CHANNEL VARCHAR ,
+OFFLINE_ONLINE VARCHAR ,
+YEAR VARCHAR ,
+MARKET_SHARE_PERCENTAGE VARCHAR ,
+MARKET_SIZE_UNIT VARCHAR ,
+MARKET_SIZE VARCHAR ,
+GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR VARCHAR ,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR
+);
+
+drop table "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+use schema euromonitor
+
+truncate table "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+select count(*) as "Number of Records in GLOBAL_MARKET_SIZEIN_VALUE_LANDIN" from "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select * from "TEST_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MARKET_SIZEIN_VALUE_LANDING" from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MARKET_SIZEIN_VOLUME_LANDING" from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.CHANNEL_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MANUFACTURER_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.BRAND_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+describe table  "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+
+
+truncate table "DEV_RAW"."EUROMONITOR"."GROWTH_TRENDS_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."GROWTH_TRENDS_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.GROWTH_TRENDS_LANDING" from "DEV_RAW"."EUROMONITOR"."GROWTH_TRENDS_LANDING"
+
+
+truncate table "DEV_RAW"."EUROMONITOR"."SOURCES_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."SOURCES_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.SOURCES_LANDING" from "DEV_RAW"."EUROMONITOR"."SOURCES_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."DATAMETRICS_EXCHANGERATE_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_EXCHANGERATE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.DATAMETRICS_EXCHANGERATE_LANDING" from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_EXCHANGERATE_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."DATAMETRICS_INFLATION_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_INFLATION_LANDING"
+select count(*) as "Number of Records in DEV_RAW.DATAMETRICS_INFLATION_LANDING" from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_INFLATION_LANDING"
+
+
+set source_system = 'SI_MARKETPLACE_REF_DATA'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+use schema MS_POS
+select * from "DEV_RAW"."MS_POS"."MS_POS_BASELINE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.MS_POS_BASELINE_LANDING" from "DEV_RAW"."MS_POS"."MS_POS_BASELINE_LANDING"
+describe table  "DEV_RAW"."MS_POS"."MS_POS_BASELINE_LANDING"
+
+use schema "DEV_RAW"."SI_MARKETPLACE_REF_DATA"
+truncate table "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+-- 28 rows
+select count(*) as "Number of Records in DEV_RAW.SI_BRAND_MANUFACTURER_MAPPING_LANDING" from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+describe table  "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+
+use schema "DEV_RAW"."SI_MARKETPLACE_REF_DATA"
+truncate table "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_CATEGORY_MARKET_SIZE_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_CATEGORY_MARKET_SIZE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.SI_CATEGORY_MARKET_SIZE_LANDING" from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_CATEGORY_MARKET_SIZE_LANDING"
+describe table  "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_CATEGORY_MARKET_SIZE_LANDING"
+
+use schema "DEV_RAW"."SI_MARKETPLACE_REF_DATA"
+truncate table "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+select count(*) as "Number of Records in DEV_RAW.SI_ECON_MNEMONIC_MAPPING_LANDING" from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+describe table  "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+
+use schema NUMERATOR
+select * from "TEST_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+select * from "TEST_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select * from "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+select * from "TEST_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+truncate table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select * from "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select distinct(eventdts) from "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+
+use schema prowl
+truncate table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+select * from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING" where week_id is NOT NULL
+SELECT COUNT(*)
+ as Row_Count FROM "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+ 
+SELECT COUNT(*)
+ as ROW_COUNT FROM "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+
+select * from TEST_RAW.IHSMARKIT.IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES
+where source_id ='109551056'
+
+use schema euromonitor
+
+select * from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+create or replace table CHANNEL_DATA_LANDING clone DEV_RAW.EUROMONITOR.CHANNEL_DATA_LANDING
+
+select *
+from test_raw.numerator.outdoor_brand_share_landing
+
+set source_system = 'IHSMARKIT'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+where 1 =1
+and time_period = '2021-12-31'
+and BRAND = 'Ryobi'
+and retailer in ('Home Depot', 'Amazon.com')
+
+use schema IHSMARKIT
+  select LOADDTS from "TEST_RAW"."IHSMARKIT"."IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES_LANDING"
+  select count(distinct(SOURCE_ID)) from "TEST_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_GLOBAL"
+select count(distinct(SOURCE_ID)) from IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES
+select count(*) from IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES
+select * from MARKET_SIZEIN_VALUE_LANDING clone "TEST_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select * from "TEST_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"

@@ -1,0 +1,32 @@
+use database dev_raw
+create schema ambika
+CREATE or replace TABLE Employee  
+(  
+EmployeeID int,  
+DEPTNO    CHAR(3),
+FirstName varchar(255),  
+LastName varchar(255),  
+Email varchar(255),  
+AddressLine varchar(255),  
+City varchar(255),
+salary int,
+payment varchar(200)
+);  
+
+insert into employee
+  (EmployeeID, DEPTNO,FirstName,LastName,Email,AddressLine,City,salary,payment)
+  values (101, 01,'Ambika','Shyam','ambikashyam@gmail.com', '2130 Boars Nest', 
+          'Georgia',2500,'UPI');
+insert into employee
+  (EmployeeID, DEPTNO,FirstName,LastName,Email,AddressLine,City,salary,payment)
+  values (102, 02,'Janaki','sethu','janakisethu@gmail.com', '2130 Board Nest', 
+          'Nokia',4500,'NET TRANSFER');
+          
+  select * from "DEV_RAW"."AMBIKA"."EMPLOYEE"
+  
+  select max(salary) from employee
+  select CONCAT(MAX(SALARY),' ',COUNT(EMPLOYEEID)) AS COUNT_OF_EMP_HOLDING_MAX_SALARY FROM EMPLOYEE   GROUP BY EMPLOYEEID,SALARY ORDER BY SALARY DESC
+  SELECT ROUND(SUM(SALARY),2) FROM EMPLOYEE
+  SELECT SUM(SALARY)FROM EMPLOYEE
+  
+  drop schema ambika

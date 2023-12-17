@@ -1,0 +1,975 @@
+use schema test_consolidated
+use warehouse dev_edw_wh
+use database dev_raw
+alter warehouse  dev_edw_wh resume 
+select * from CONTENTSCORE
+SELECT WEEKOFYEAR(NOW())
+use database dev_raw
+use schema stackline
+USE SCHEMA PROWL
+use database dev_edw
+create schema stackline
+
+--dev_raw (personal use)
+use database dev_raw
+use warehouse dev_edw_wh
+create schema dev_raw.jaffle_shop
+create schema dev_raw.stripe 
+use schema jaffle_shop
+create table dev_raw.jaffle_shop.customers 
+( id integer,
+  first_name varchar,
+  last_name varchar
+);
+
+copy into dev_raw.jaffle_shop.customers (id, first_name, last_name)
+from 's3://dbt-tutorial-public/jaffle_shop_customers.csv'
+file_format = (
+  type = 'CSV'
+  field_delimiter = ','
+  skip_header = 1
+  );
+
+
+create table dev_raw.jaffle_shop.orders
+( id integer,
+  user_id integer,
+  order_date date,
+  status varchar,
+  _etl_loaded_at timestamp default current_timestamp
+);
+
+copy into dev_raw.jaffle_shop.orders (id, user_id, order_date, status)
+from 's3://dbt-tutorial-public/jaffle_shop_orders.csv'
+file_format = (
+  type = 'CSV'
+  field_delimiter = ','
+  skip_header = 1
+  );
+
+
+ create table dev_raw.stripe.payments
+( id integer,
+  orderid integer,
+  paymentmethod varchar,
+  status varchar,
+  amount integer,
+  created date,
+  _batched_at timestamp default current_timestamp
+);
+
+select * from EDW_DBT_VIEWS.EDW_PRICING_COMPETITOR_SALES_STACKLINE_tmp1
+copy into dev_raw.stripe.payments (id, orderid, paymentmethod, status, amount, created)
+from 's3://dbt-tutorial-public/stripe_payments.csv'
+file_format = (
+  type = 'CSV'
+  field_delimiter = ','
+  skip_header = 1
+  );
+  
+select * from dev_raw.jaffle_shop.customers;
+select * from dev_raw.jaffle_shop.orders;
+select * from dev_raw.stripe.payments;
+
+
+
+
+use schema stackline
+use database prod_raw
+use database prod_raw
+select * from "DEV_RAW"."STACKLINE"."SALES_LANDING"
+select * from "PROD_RAW"."STACKLINE"."PROMOTIONS" where dealdate like '8/2022' LIMIT 100000
+select * from "DEV_RAW"."STACKLINE"."SALES" LIMIT 1000
+
+select * from "DEV_RAW"."STACKLINE"."PROMOTIONS" LIMIT 10
+select * from "DEV_RAW"."STACKLINE"."CONTENTSCORE" LIMIT 10
+select * from "DEV_RAW"."STACKLINE"."SALES_CHANGES"
+USE DATABASE DEV_RAW
+USE SCHEMA PUBLIC
+select * from "DEV_RAW"."STACKLINE"."RATINGSREVIEWS" LIMIT 10
+select * from "DEV_RAW"."STACKLINE"."PROMOTIONS" LIMIT 10
+select * from "DEV_RAW"."STACKLINE"."SALES" LIMIT 10
+desc table "DEV_RAW"."STACKLINE"."RATINGSREVIEWS"
+
+
+USE DATABASE DEV_EDW
+USE SCHEMA CONSOLIDATED_09282022
+
+select * from "DEV_RAW"."STACKLINE"."SALES_HISTORY"
+select * from "DEV_RAW"."STACKLINE"."SALES_LANDING_COPY"
+select * from "DEV_RAW"."STACKLINE"."SALES_QUARANTINE" 
+select * from "DEV_RAW"."STACKLINE"."SALES_VALIDATED"
+SELECT DISTINCT(RETAILERID) FROM "DEV_RAW"."STACKLINE".STACKLINE_RETAILERS limit 2000
+DESC TABLE DEV_EDW.PUBLIC.STACKLINE_RETAILERS
+desc table 
+USE DATABASE DEV_RAW
+USE SCHEMA CONSOLIDATED_09282022
+
+CREATE TABLE STACKLINE_RETAILERS CLONE "PROD_RAW"."STACKLINE"."SALES"
+drop table "PROD_RAW"."STACKLINE".STACKLINE_RETAILERS
+USE SCHEMA STACKLINE
+select * from DEV_RAW.PUBLIC.STACKLINE_RETAILERS LIMIT 10
+USE DATABASE PROD_RAW
+USE SCHEMA STACKLINE
+
+alter table "DEV_RAW"."STACKLINE".STACKLINE_RETAILERS add column LOADDTS TIMESTAMP_NTZ(9)
+use database DEV_RAW
+CREATE TABLE "DEV_RAW"."STACKLINE".STACKLINE_RETAILERS CLONE DEV_EDW.PUBLIC.STACKLINE_RETAILERS
+select retailersku,weekid
+SELECT * from "PROD_RAW"."STACKLINE"."SALES" LIMIT 10 group by 1,2 having count(*) > 1 and weekid >'201901'
+DESC TABLE "PROD_RAW"."STACKLINE"."SALES"
+WITH STACKLINE_RETAILERS AS(
+SELECT DISTINCT * FROM
+( SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE".SALES
+  WHERE WEEKID >= 202201
+UNION ALL
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE".RATINGSREVIEWS
+  WHERE WEEKID >= 202201
+  UNION ALL
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE".PROMOTIONS
+  WHERE WEEKID >= 202201
+  UNION ALL
+SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE".PROMOTIONS
+  WHERE WEEKID >= 202201
+  UNION ALL
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE".CONTENTSCORE
+  WHERE WEEKID >= 202201)
+ )
+select * from STACKLINE_RETAILERS as R
+LEFT OUTER JOIN "PROD_RAW"."STACKLINE".SALES SA
+              ON R.RETAILERID = SA.RETAILERID
+             AND R.RETAILERSKU = SA.RETAILERSKU
+             AND R.WEEKID = SA.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".RATINGSREVIEWS RR
+              ON R.RETAILERID = RR.RETAILERID
+             AND R.RETAILERSKU = RR.RETAILERSKU
+             AND R.WEEKID = RR.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".CONTENTSCORE CS
+              ON R.RETAILERID = CS.RETAILERID
+             AND R.RETAILERSKU = CS.RETAILERSKU
+             AND R.WEEKID = CS.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".PROMOTIONS P
+              ON R.RETAILERID = P.RETAILERID
+             AND R.RETAILERSKU = P.RETAILERSKU 
+
+EDW_PRICING_COMPETITOR_SALES_STACKLINE
+
+         
+FROM STACKLINE_RETAILERS AS R 
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".SALES SA
+              ON R.RETAILERID = SA.RETAILERID
+             AND R.RETAILERSKU = SA.RETAILERSKU
+             AND R.WEEKID = SA.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".RATINGSREVIEWS RR
+              ON R.RETAILERID = RR.RETAILERID
+             AND R.RETAILERSKU = RR.RETAILERSKU
+             AND R.WEEKID = RR.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".CONTENTSCORE CS
+              ON R.RETAILERID = CS.RETAILERID
+             AND R.RETAILERSKU = CS.RETAILERSKU
+             AND R.WEEKID = CS.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".PROMOTIONS P
+              ON R.RETAILERID = P.RETAILERID
+             AND R.RETAILERSKU = P.RETAILERSKU 
+
+
+SELECT R.RETAILERID,
+         COALESCE(S.RETAILERNAME, RV.RETAILERNAME, CS.RETAILERNAME, P.RETAILERNAME) AS RETAILERNAME,
+         R.RETAILERSKU,
+         COALESCE(S.UPC, RV.UPC, CS.UPC, P.UPC) AS UPC,
+         COALESCE(S.MODELNUMBER, RV.MODELNUMBER, CS.MODELNUMBER, P.MODELNUMBER) AS MODELNUMBER,
+         COALESCE(S.TITLE, RV.TITLE, CS.TITLE, P.TITLE) AS TITLE,
+         COALESCE(S.BRAND, RV.BRAND, CS.BRAND, P.BRAND) AS BRAND,
+         COALESCE(S.CATEGORY, RV.CATEGORY, CS.CATEGORY, P.CATEGORY) AS CATEGORY,
+         COALESCE(S.SUBCATEGORY, RV.SUBCATEGORY, CS.SUBCATEGORY, P.SUBCATEGORY) AS SUBCATEGORY,
+         R.WEEKID,
+         COALESCE(S.WEEKENDING, RV.WEEKENDING, CS.WEEKENDING, P.WEEKENDING) AS WEEKENDING,
+         P.PROMOTYPE AS PROMOTYPE,
+P.DEALDATE AS DEALDATE,
+         COALESCE(S.RETAILPRICE, P.RETAILPRICE) AS RETAILPRICE,
+         P.RETAILPRICECHANGE AS RETAILPRICECHANGE,
+         P.RETAILSALESCHANGE AS RETAILSALESCHANGE,
+         COALESCE(S.UNITSSOLD, P.UNITSSOLD) AS UNITSSOLD,
+         P.UNITSSOLDCHANGE AS UNITSSOLDCHANGE,
+         COALESCE(S.RETAILSALES, RV.RETAILSALES, CS.RETAILSALES, P.RETAILSALES) AS RETAILSALES,
+         RV.RATING AS RATING,
+         RV.REVIEWSCOUNT AS REVIEWSCOUNT
+  FROM DEV_EDW.PUBLIC.STACKLINE_RETAILERS R 
+LEFT OUTER JOIN "PROD_RAW"."STACKLINE".SALES S
+              ON R.RETAILERID = S.RETAILERID
+             AND R.RETAILERSKU = S.RETAILERSKU
+             AND R.WEEKID = S.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".RATINGSREVIEWS RV
+              ON R.RETAILERID = RV.RETAILERID
+             AND R.RETAILERSKU = RV.RETAILERSKU
+             AND R.WEEKID = RV.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".CONTENTSCORE CS
+              ON R.RETAILERID = CS.RETAILERID
+             AND R.RETAILERSKU = CS.RETAILERSKU
+             AND R.WEEKID = CS.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".PROMOTIONS P
+              ON R.RETAILERID = P.RETAILERID
+             AND R.RETAILERSKU = P.RETAILERSKU
+WHERE R.WEEKID LIKE '2022%'
+
+USE DATABASE DEV_RAW
+USE DATABASE PROD_RAW
+USE SCHEMA STACKLINE
+SEELCT * FROM 
+USE SCHEMA "DEV_EDW"."CONSOLIDATED_09282022"
+DROP TABLE DEV_ED.CONSOLIDATED_09282022.STACKLINE_RETAILERS
+SELECT * FROM DEV_EDW.CONSOLIDATED_09282022.STACKLINE_RETAILERS WHERE WEEKID LIKE '2022%'
+SELECT * FROM DEV_EDW.PUBLIC.STACKLINE_RETAILERS WHERE WEEKID LIKE '2022%'
+select * from "DEV_RAW"."STACKLINE"."RATINGSREVIEWS" LIMIT 10
+select * from "DEV_RAW"."STACKLINE"."PROMOTIONS" LIMIT 10
+select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(WEEKID) IS  NULL 
+ LIMIT 10
+ select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(RETAILERID) IS  NULL 
+ LIMIT 10
+ select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(RETAILSALES) IS  NULL 
+ LIMIT 10
+ select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(UNITSSOLD) IS  NULL 
+ LIMIT 10
+ select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(RETAILPRICE) IS  NULL 
+ LIMIT 10
+ select * from "PROD_RAW"."STACKLINE"."SALES" WHERE TRY_TO_NUMBER(RETAILERSKU) IS  NULL 
+ LIMIT 10
+ 
+ SELECT COALESCE(RETAILPRICE,RETAILERID) FROM "PROD_RAW"."STACKLINE"."SALES" LIMIT 10
+ SELECT RETAILERID FROM "PROD_RAW"."STACKLINE"."SALES" LIMIT 10
+  SELECT RETAILPRICE FROM "PROD_RAW"."STACKLINE"."SALES" LIMIT 10
+
+ 
+  SELECT UPC FROM "PROD_RAW"."STACKLINE"."SALES" LIMIT 1000
+
+desc table "DEV_RAW"."STACKLINE"."SALES"
+
+select * from information_schema.columns WHERE TABLE_NAME = 'PROMOTIONS'
+DESC TABLE "PROD_RAW"."STACKLINE"."SALES"
+SELECT * FROM "DEV_EDW"."EDW_DBT_VIEWS"."EDW_STACKLINE_VW" limit 10
+use schema public
+
+DROP VIEW "DEV_EDW"."EDW_DBT_VIEWS"."EDW_STACKLINE_VW"
+desc view "DEV_EDW"."EDW_DBT_VIEWS"."EDW_STACKLINE_VW"
+USE DATABASE DEV_RAW
+USE SCHEMA EDT_DBT_VIEWS
+USE DATABASE DEV_EDW
+USE SCHEMA EDW_DBT_VIEWS
+
+
+
+SELECT * FROM EDW_DBT_VIEWS.EDW_STACKLINE_JOIN_VW 
+SELECT * FROM EDW_DBT_VIEWS.EDW_STACKLINE_VW LIMIT 10
+select count(distinct(retailerid))from "PROD_RAW"."STACKLINE"."SALES"  where retailerid between 10 and 20 limit 1000
+select count(retailerid) from "PROD_RAW"."STACKLINE"."SALES" limit 1000  where retailerid between 10 and 50 limit 10
+select retailerid from "PROD_RAW"."STACKLINE"."SALES"
+
+    select retailerid from "PROD_RAW"."STACKLINE"."SALES" where retailerid < 30 limit 100
+select retailerid from "PROD_RAW"."STACKLINE"."SALES" where retailerid between 10 and 20 limit 1000
+
+select count(*) from "PROD_RAW"."STACKLINE"."SALES"
+select count(distinct(brand)) from "PROD_RAW"."STACKLINE"."SALES" 
+select distinct(brand) from "PROD_RAW"."STACKLINE"."SALES" 
+select  count(brand) from "PROD_RAW"."STACKLINE"."SALES" 
+select  count(category) from "PROD_RAW"."STACKLINE"."SALES" 
+select distinct(category) from "PROD_RAW"."STACKLINE"."SALES" 
+
+select count(distinct(brand)) from "PROD_RAW"."STACKLINE"."SALES" 
+select distinct(retailersku) from "PROD_RAW"."STACKLINE"."SALES" 
+select count(distinct(retailersku)) from "PROD_RAW"."STACKLINE"."PROMOTIONS" 
+select count(retailersku)from "PROD_RAW"."STACKLINE"."PROMOTIONS" 
+
+select distinct(retailersku) from "PROD_RAW"."STACKLINE"."PROMOTIONS" 
+
+
+SELECT R.RETAILERID,
+         COALESCE(S.RETAILERNAME, RV.RETAILERNAME, CS.RETAILERNAME, P.RETAILERNAME) AS RETAILERNAME,
+         R.RETAILERSKU,
+         COALESCE(S.UPC, RV.UPC, CS.UPC, P.UPC) AS UPC,
+         COALESCE(S.MODELNUMBER, RV.MODELNUMBER, CS.MODELNUMBER, P.MODELNUMBER) AS MODELNUMBER,
+         COALESCE(S.TITLE, RV.TITLE, CS.TITLE, P.TITLE) AS TITLE,
+         COALESCE(S.BRAND, RV.BRAND, CS.BRAND, P.BRAND) AS BRAND,
+         COALESCE(S.CATEGORY, RV.CATEGORY, CS.CATEGORY, P.CATEGORY) AS CATEGORY,
+         COALESCE(S.SUBCATEGORY, RV.SUBCATEGORY, CS.SUBCATEGORY, P.SUBCATEGORY) AS SUBCATEGORY,
+         R.WEEKID,
+         COALESCE(S.WEEKENDING, RV.WEEKENDING, CS.WEEKENDING, P.WEEKENDING) AS WEEKENDING,
+         P.PROMOTYPE AS PROMOTYPE,
+         P.DEALDATE AS DEALDATE,
+         COALESCE(S.RETAILPRICE, P.RETAILPRICE) AS RETAILPRICE,
+         P.RETAILPRICECHANGE AS RETAILPRICECHANGE,
+         P.RETAILSALESCHANGE AS RETAILSALESCHANGE,
+         COALESCE(S.UNITSSOLD, P.UNITSSOLD) AS UNITSSOLD,
+         P.UNITSSOLDCHANGE AS UNITSSOLDCHANGE,
+         COALESCE(S.RETAILSALES, RV.RETAILSALES, CS.RETAILSALES, P.RETAILSALES) AS RETAILSALES,
+         RV.RATING AS RATING,
+         RV.REVIEWSCOUNT AS REVIEWSCOUNT
+  FROM DEV_EDW.PUBLIC.STACKLINE_RETAILERS R 
+LEFT OUTER JOIN "PROD_RAW"."STACKLINE".SALES S
+              ON R.RETAILERID = S.RETAILERID
+             AND R.RETAILERSKU = S.RETAILERSKU
+             AND R.WEEKID = S.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".RATINGSREVIEWS RV
+              ON R.RETAILERID = RV.RETAILERID
+             AND R.RETAILERSKU = RV.RETAILERSKU
+             AND R.WEEKID = RV.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".CONTENTSCORE CS
+              ON R.RETAILERID = CS.RETAILERID
+             AND R.RETAILERSKU = CS.RETAILERSKU
+             AND R.WEEKID = CS.WEEKID
+         LEFT OUTER JOIN "PROD_RAW"."STACKLINE".PROMOTIONS P
+              ON R.RETAILERID = P.RETAILERID
+             AND R.RETAILERSKU = P.RETAILERSKU
+
+
+
+select count(brand)from "PROD_RAW"."STACKLINE"."SALES" limit 100
+
+
+
+select * from "PROD_RAW"."STACKLINE"."SALES"  limit 10;
+select * from "PROD_RAW"."STACKLINE"."SALES_HISTORY" limit 100;
+desc table "PROD_RAW"."STACKLINE"."SALES"
+select * from "PROD_RAW"."STACKLINE"."CONTENTSCORE" limit 10;
+select * from "PROD_RAW"."STACKLINE"."PROMOTIONS" limit 10;
+select * from "PROD_RAW"."STACKLINE"."RATINGSREVIEWS" limit 10;
+desc table "PROD_RAW"."STACKLINE"."PROMOTIONS"
+use schema stackline
+select * from "PROD_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA" where reports = 'Y'
+use schema prowl
+desc table "PROD_RAW"."PROWL"."PROWL_FULL_URL_LIST_US"
+
+select TITLE from "PROD_RAW"."STACKLINE"."PROMOTIONS"
+union all
+select TITLE from "PROD_RAW"."STACKLINE"."SALES" 
+union all
+select TITLE from "PROD_RAW"."STACKLINE"."RATINGSREVIEWS"  limit 1000;
+
+select retailersku,weekid
+from "PROD_RAW"."STACKLINE"."PROMOTIONS" group by 1,2 having count(*) > 1 and weekid >'201901'
+union all
+select retailersku,weekid
+from "PROD_RAW"."STACKLINE"."PROMOTIONS" group by 1,2 having count(*) > 1 and weekid >'201901'
+
+union all
+select RETAILErSKU
+from "PROD_RAW"."STACKLINE"."PROMOTIONS" where retailerid = 15
+
+
+
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES,UNITSSOLD,RETAILPRICE
+from "PROD_RAW"."STACKLINE"."PROMOTIONS" group by 1,3 having count(*) > 1
+union 
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES,UNITSSOLD,RETAILPRICE 
+from "PROD_RAW"."STACKLINE"."SALES"  limit 1000
+
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES,UNITSSOLD,RETAILPRICE
+from "PROD_RAW"."STACKLINE"."PROMOTIONS"
+union all
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES,UNITSSOLD,RETAILPRICE 
+from "PROD_RAW"."STACKLINE"."SALES"  limit 1000
+union all
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES
+from "PROD_RAW"."STACKLINE"."RATINGSREVIEWS"  
+union all
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES
+from "PROD_RAW"."STACKLINE"."CONTENTSCORE" limit 1000
+
+select RETAILERID,RETAILERNAME,RETAILERSKU,UPC,MODELNUMBER,TITLE,BRAND,
+CATEGORY,SUBCATEGORY,WEEKID,WEEKENDING,RETAILSALES,UNITSSOLD,RETAILPRICE 
+from "PROD_RAW"."STACKLINE"."SALES" where weekending >= '05/23/2020'  limit 1000
+union all
+
+select count(*) from "PROD_RAW"."STACKLINE"."SALES" where weekid > 202201
+
+select distinct(retailsales) from "PROD_RAW"."STACKLINE"."PROMOTIONS"
+
+select current_timestamp() as tstamp
+select '2022-09-02'::timestamp as tst
+select current_timestamp as tstamp1,
+select week(tstamp) as 'week'
+
+
+select 
+       '2022-09-02 00:07:15.123 -0700'::timestamp as tstamp,
+       year(tstamp) as "YEAR", 
+       quarter(tstamp) as "QUARTER OF YEAR",
+       month(tstamp) as "MONTH", 
+       day(tstamp) as "DAY",
+       dayofmonth(tstamp) as "DAY OF MONTH",
+       dayofyear(tstamp) as "DAY OF YEAR";
+       
+       
+ -- how to find the starting of the week
+SET IsoWeek = '202207';
+
+SET tyear = SUBSTR( $IsoWeek, 1, 4);
+SET tweek = SUBSTR( $IsoWeek, 5);
+
+SELECT LAST_DAY(TO_DATE( $tyear , 'YYYY'), week) AS last_day_of_first_week,
+DATEADD( day, 1, last_day_of_first_week ) AS first_day_of_second_week,
+IFF( $tweek = 1, TO_DATE( $tyear, 'YYYY'), DATEADD( week, $tweek -1, first_day_of_second_week  )) as beginning_of_the_week,
+DATEADD( day, 6, beginning_of_the_week ) AS end_week
+
+use database TEST_RAW
+select * from "DEV_EDW"."CONSOLIDATED_09282022"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_RCC
+select * from "TEST_RAW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES"
+
+
+select * from "DEV_RAW"."STACKLINE"."SALES" limit 10
+
+select * from "DEV_RAW"."STACKLINE"."CONTENTSCORE_LANDING"
+desc table "DEV_RAW"."STACKLINE"."SALES_LANDING"
+select * from "DEV_RAW"."STACKLINE"."PROMOTIONS_LANDING"
+desc table "DEV_RAW"."STACKLINE"."PROMOTIONS_LANDING"
+select * from "DEV_RAW"."STACKLINE"."RATINGSREVIEWS_LANDING"
+select * from "PROD_RAW"."STACKLINE"."SALES" limit 10
+desc table "PROD_RAW"."STACKLINE"."SALES"
+select * from "PROD_RAW"."STACKLINE"."PROMOTIONS" limit 10
+select * from "PROD_RAW"."STACKLINE"."RATINGSREVIEWS" limit 10
+
+use schema sequentum
+
+
+
+
+
+
+           
+DESC TABLE        "PROD_RAW"."STACKLINE".PROMOTIONS    
+
+select * FROM "PROD_RAW"."STACKLINE".PROMOTIONS  where weekid lik limit 10
+LEFT OUTER JOIN "PROD_RAW"."STACKLINE".SALES S
+ON P.WEEKID = S.WEEKID
+LEFT OUTER JOIN "PROD_RAW"."STACKLINE".RATINGSREVIEWS RV
+ON RV.WEEKID = P.WEEKID  limit 1000
+
+SELECT * FROM "PROD_RAW"."STACKLINE".PROMOTIONS  where WEEKENDING like '8/2022' LIMIT 1000
+SELECT * FROM "PROD_RAW"."STACKLINE".SALES  where weekid like '8/2022' LIMIT 1000
+SELECT * FROM "PROD_RAW"."STACKLINE".contentscore where weekid like '8/2022' LIMIT 1000
+
+
+
+GET_DDL('TABLE', 'US')  
+select get_ddl('TABLE', 'US');
+select * from US
+
+use database prod_raw
+use schema prowl
+select * from "PROD_RAW"."PROWL"."VW_PROWL_FULL_URL_LIST_US" limit 10
+desc table "PROD_RAW"."PROWL"."VW_PROWL_FULL_URL_LIST_CANADA"
+select * from "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES"
+GET_DDL('TABLE', 'US') 
+select get_ddl('TABLE', 'EDW_PRICING_COMPETITOR_SALES');
+select * from EDW_PRICING_COMPETITOR_SALES where QueryID = '01a73eef-0502-7f90-0043-888343d2d07a'
+
+use schema consolidated
+select * from EDW_PRICING_COMPETITOR_SALES_VW limit 10
+
+{% macro ReleaseObjects() %}
+
+USE SCHEMA CONSOLIDATED;
+USE DATABASE DEV_RAW
+USE SCHEMA STACKLINE
+SELECT * FROM SALES LIMIT 10
+SELECT * FROM 
+select 'IFNULL(NULL,LOADDTS)' Condition ,IFNULL(MODELNUMBER,'') FROM SALES LIMIT 1000
+
+create or replace temporary table EDW_PRICING_COMPETITOR_SALES (
+	SRC_SYS_KEY VARCHAR(255) NOT NULL COMMENT 'Identifies the origin of data source, in other word source system from where data is brought. The Key will be available in Source System table where one entry will exist for each participating system.\n',
+	PRC_COMPTTR_SLS_KEY VARCHAR(2000) NOT NULL COMMENT 'Key Identifier to make the Pricing Competitor Sales record Unique and This Column serves as Primary Key constraint on the Table and is generated by Concatinating (Competitor Product ID,SourceSystem Code, Store Name, RUN DATE) ',
+	SRC_RCRD_CREATE_DTE TIMESTAMP_NTZ(9) COMMENT 'Date and time when this record was created at source system table (driver table in case of multiple table/files are involved). NULL if not available at source. ',
+	SRC_RCRD_CREATE_USERID VARCHAR(255) COMMENT 'The ID of the user who created the record at the at source system table (driver table in case of multiple table/files are involved). NULL if not available at source. ',
+	SRC_RCRD_UPD_DTE TIMESTAMP_NTZ(9) COMMENT 'Date and time when this record was updated at source system table (driver table in case of multiple table/files are involved). ',
+	SRC_RCRD_UPD_USERID VARCHAR(255) COMMENT 'The ID of the user who updated the record at the at source system table (driver table in case of multiple table/files are involved). ',
+	RCRD_HASH_KEY VARCHAR(255) COMMENT 'The hash value (MD5/SHA256/etc.) of the qualified columns, that is considered to be different to enable versioning of record, will be stored in this column. ',
+	EFF_DTE TIMESTAMP_NTZ(9) COMMENT 'Date and time when this version of the record is created and become effective or valid ',
+	EXPR_DTE TIMESTAMP_NTZ(9) COMMENT 'Date and time when this version of the record has expired and no longer effective or valid at the target ',
+	CURR_RCRD_FLAG VARCHAR(1) COMMENT 'Default =\"Y\". This flag Indicates if the version of record is current or obsolete. “Y” indicates that the record is current and “N” indicates the record is obsolete or old. ',
+	ORP_RCRD_FLAG VARCHAR(1) COMMENT 'Default =\"N\". This flag indicates if the record is orphan (master/reference data information is missing). “Y” indicates that the record is orphan, and some program has created this record with missing/dummy key value in the Master/Reference table to maintain integrity. When the actual record arrives from its parent source, the column values are updated and this flag is set as “N”.  ',
+	DEL_FROM_SRC_FLAG VARCHAR(1) COMMENT 'Default =\"N\". When it is detected that the record has been deleted from the source table, then the corresponding record at target is marked as delete (soft delete) setting the flag as “Y”. (“U” à The status of record is unknown in terms of record deleted from source.) ',
+	ETL_INS_PID VARCHAR(255) COMMENT 'Contains information about the ETL/ELT job & package which has created the record ',
+	ETL_INS_DTE TIMESTAMP_NTZ(9) COMMENT 'Date and time when this record is created or inserted at the target table. ',
+	ETL_UPD_PID VARCHAR(255) COMMENT 'Contains information about the ETL/ELT job & package which has updated the record last time (may be removed if ETL architect confirms) ',
+	ETL_UPD_DTE TIMESTAMP_NTZ(9) COMMENT 'When Insert this will be NULL. Date and time when this record is updated last time at the target table. ',
+	ZONE3_LOD_DTE TIMESTAMP_NTZ(9) COMMENT 'Zone3 Load DateTime (This will be used in ETL load from Zone 3 to Snowflake)',
+	PRC_EFF_START_DTE TIMESTAMP_NTZ(9) COMMENT 'Recorded date is the cut-off date established to determine the day price is updated or created. This field provides the date on which the data was recorded. ',
+	PRC_EFF_END_DTE TIMESTAMP_NTZ(9) COMMENT 'Business: >> This colum should update transformation as \"Effective start date - 1\"',
+	COMPTTR_PROD_NBR VARCHAR(255) COMMENT 'This field provides the product model number of the competitor',
+	CRNCY_KEY VARCHAR(255) DEFAULT 'N/A' COMMENT 'This field is an Currency to show which currency is being used. ',
+	BRAND_LKEY VARCHAR(255) DEFAULT 'N/A' COMMENT 'Brand is type of product manufactured by a particular company under a particular name.This field provides the brand name of the product.',
+	COMPTTR_BRAND_LKEY VARCHAR(1000) DEFAULT 'N/A' COMMENT 'Brand name of the competitor product is provided in this field',
+	CUST_CHNL_LKEY VARCHAR(255) DEFAULT 'N/A' COMMENT 'This field provides the customer channel method used.\nThe Customer Channels is the building block that describes how a company communicates with its Customer Segments to deliver a Value Proposition.',
+	SBU_LKEY VARCHAR(255) DEFAULT 'N/A' COMMENT 'This field provides the Store Business Unit from which the product is sold',
+	SLS_PROMO_TYPE VARCHAR(255)  COMMENT 'The method used for the promotion',
+	SLS_PROMO_EVNT_START_DTE TIMESTAMP_NTZ(9) COMMENT 'The date on which the event takes place',
+	SLS_PROMO_END_MAP_DTE TIMESTAMP_NTZ(9) COMMENT 'This field provides the date and time on which the sales monitoring ends.',
+	SLS_PROMO_START_DTE TIMESTAMP_NTZ(9) COMMENT 'This field provides the date and time on which the sales monitoring starts',
+	SLS_PROMO_END_DTE TIMESTAMP_NTZ(9) COMMENT 'This field provides the date and time on which the sales monitoring ends',
+	COMPTTR_PROD_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'This field provides the price of the product\nPricing of the product is something different from its price. In simple words, pricing is the art of translating into quantitative terms the value of a product to customers at a point of time. ',
+	COMPTTR_PROMO_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'This field provides the price of the product after the promotion is applied.\nA price promotion is a reduced price that is intended to increase sales.',
+	VAT_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'This field provides the Value Added Tax price\nValue Added Tax is a type of tax that is charged by the Central Government on the sale of services and goods to the consumers. It is commonly expressed as a percentage of the total cost',
+	PROD_LIST_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'Product Price is the price as of the time we pull the data.\nThe list price is the price that the manufacturer of an item suggests that a store should charge for it. SIMILAR WORDS: retail price',
+	VAT_PROMO_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'This field provides the Value Added Tax promotion price',
+	VAT_LIST_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'Gives the Value Added Tax list price',
+	SBD_PROD_DESC VARCHAR(2000) COMMENT 'This field give the description of the SBD product.',
+	RTL_SLS_CHNG NUMBER(28,10) COMMENT 'Gives the value of change in retail sales effected by the promotion',
+	RTL_PRC_CHNG NUMBER(28,10) COMMENT 'Gives the value of change in retail price effected by the promotion',
+	STORE_NAME VARCHAR(255) COMMENT 'The name of the store where the competitors product is sold',
+	ONLINE_SELLER_NAME VARCHAR(255) COMMENT 'The name of the store where the SBD product is sold.',
+	ONLINE_PROD_CD VARCHAR(255) COMMENT 'The price at which the SBD product is being sold',
+	SBD_SELL_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'The price at which the SBD product is being sold',
+	COMPTTR_PROD_DESC VARCHAR(2000),
+	TOT_PRC NUMBER(28,10) DEFAULT 0,
+	TOT_USD_PRC NUMBER(28,10) DEFAULT 0,
+	SELLER_ID VARCHAR(255),
+	SELLER_NAME VARCHAR(255),
+	SELLER_CITY VARCHAR(255),
+	SELLER_STATE VARCHAR(255),
+	STORE_ID VARCHAR(255),
+	SELLER_TYP_ID VARCHAR(255),
+	SELLER_TYP_NAME VARCHAR(255),
+	CTGY_ID VARCHAR(255),
+	CTGY_NAME VARCHAR(255),
+	SUB_CTGY VARCHAR(255) COMMENT 'Sub Category Name of the Product',
+	ORIG_QTY NUMBER(28,10),
+	AVAIL_QTY NUMBER(28,10),
+	SOLD_QTY NUMBER(28,10),
+	UNITS_SOLD_CHNG NUMBER(28,10) COMMENT 'Gives the value of change in the total number of units sold effected by the Sales promotion',
+	MAP_PRICE NUMBER(28,10)  COMMENT 'This field provides the minimum advertisement Price of the product by the Seller',
+	MAPP_POLICY VARCHAR(255)  COMMENT 'This field defines the policy governing the MAP of the product by the Seller',
+	CONV_RATE NUMBER(28,10),
+	COMPTTR_PROD_BASE_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'This field provides the price of the product',
+	PROD_BASE_PRC NUMBER(28,10) DEFAULT 0 COMMENT 'Product Base Price ',
+	COMPTTR_PROD_USD_PRC NUMBER(28,10) COMMENT 'This field provides the price of the product\r\nPricing of the product is something different from its price. In simple words, pricing is the art of translating into quantitative terms the value of a product to customers at a point of time.',
+	PROD_LIST_USD_PRC NUMBER(28,10) COMMENT 'Product Price is the price as of the time we pull the data.',
+	BRAND_NAME VARCHAR(1000),
+	PROD_KEY VARCHAR(1000) DEFAULT 'N/A',
+	constraint EDW_PRICING_COMPETITOR_SALES_PK_IDX primary key (SRC_SYS_KEY, PRC_COMPTTR_SLS_KEY)
+);
+
+drop table EDW_PRICING_COMPETITOR_SALES
+
+
+CREATE SCHEMA dev_edw.consolidated_copy CLONE dev_edw.consolidated;
+select COUNT(*) from "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_SYS_KEY = 'STACKLINE'
+
+desc table "DEV_EDW"."CONSOLIDATED_COPY"."EDW_PRICING_COMPETITOR_SALES"  
+
+alter schema if exists CONSOLIDATED_COPY rename to CONSOLIDATED_09282022;
+use schema CONSOLIDATED_09282022
+SELECT * FROM "DEV_EDW"."CONSOLIDATED_09282022"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_SYS_KEY = 'SEQUENTUM' LIMIT 2000
+SELECT count(*) FROM "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_SYS_KEY = 'STACKLINE'
+SELECT * FROM "DEV_EDW"."CONSOLIDATED_09282022"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_SYS_KEY like 'PROWL_CANADA%' LIMIT 2000
+select * FROM "DEV_RAW"."STACKLINE".PROMOTIONS  where weekid lik limit 10
+
+-- stackline queries
+USE DATABASE DEV_EDW
+select COUNT(*) from DEV_EDW.EDW_DBT_VIEWS.EDW_STACKLINE_PRICING_COMPETITOR_SALES_VW 
+use database dev_edw 
+select count(*) from "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES" where SRC_SYS_KEY = 'STACKLINE' 
+select * from DEV_EDW.EDW_DBT_VIEWS.EDW_STACKLINE_VW WHERE SRC_SYS_KEY = 'STACKLINE' AND  CURR_RCRD_FLAG IS NOT NULL AND SELLER_ID  >= 19 LIMIT 10
+select * from DEV_EDW.EDW_DBT_VIEWS.EDW_STACKLINE_VW WHERE SRC_SYS_KEY = 'STACKLINE' AND  CURR_RCRD_FLAG IS NOT NULL OR ORP_RCRD_FLAG IS NOT NULL OR DEL_FROM_SRC_FLAG IS NOT  NULL   AND SELLER_ID  >= 19 LIMIT 10
+select COUNT(*) as "Target_Count" from DEV_EDW.EDW_DBT_VIEWS.EDW_STACKLINE_VW WHERE SRC_SYS_KEY = 'STACKLINE'
+select COUNT(*) as "Target_Count" from DEV_EDW.EDW_DBT_VIEWS.EDW_STACKLINE_PRICING_COMPETITOR_SALES_VW WHERE SRC_SYS_KEY = 'STACKLINE'   
+use database DEV_EDW
+desc table DEV_EDW.EDW_DBT_VIEWS.STACKLINE_VW
+drop view EDW_DBT_VIEWS.EDW_STACKLINE_VW
+select * from "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES_VW"
+STACKLINE_RETAILERS
+use schema public
+select * from STACKLINE_NEW 
+select * from DEV_EDW.PUBLIC.STACKLINE_RETAILERS
+
+--stackline source and target
+select count(*) AS TARGETCOUNT  from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+-- 319214
+select count(*) AS TARGETCOUNT  from "TEST_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES"
+where SRC_SYS_KEY = 'STACKLINE'
+-- 2122
+
+DESC TABLE "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+
+--source count:
+
+--chk for null values
+select * from (select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY from  "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+where PRC_COMPTTR_SLS_KEY is not null and SRC_SYS_KEY IS NOT null and SRC_SYS_KEY = 'STACKLINE' ) LIMIT 90000000
+
+-- CHECK FOR DUPLICATES
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,COUNT(*) from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+where PRC_COMPTTR_SLS_KEY is not null and SRC_SYS_KEY IS NOT null and SRC_SYS_KEY = 'STACKLINE' GROUP BY 1,2 LIMIT 1000
+
+-- check for flags
+select CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+where SRC_SYS_KEY = 'STACKLINE'  limit 1000
+
+-- chck for flags and expiry date
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,min(EFF_DTE), max(EXPR_DTE),CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG
+from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG HAVING SRC_SYS_KEY = 'STACKLINE' LIMIT 10
+
+-- chk for  loaddts
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE,PRC_EFF_START_DTE,PRC_EFF_END_DTE,PRC_EFF_START_DTE as LOADDTS,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG
+from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE,PRC_EFF_START_DTE,PRC_EFF_END_DTE,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG HAVING SRC_SYS_KEY = 'STACKLINE' LIMIT 100
+
+-- check for brnad_lkey , sbu_lkey
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY
+from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PRICING_COMPETITOR_SALES_STACKLINE_TMP1"
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY HAVING SRC_SYS_KEY = 'STACKLINE'
+
+-- ADVANCE
+SELECT COUNT(*) FROM "DEV_RAW"."STACKLINE".SALES  
+UNION ALL 
+SELECT COUNT(*) FROM "DEV_RAW"."STACKLINE".PROMOTIONS
+UNION ALL 
+SELECT COUNT(*) FROM "DEV_RAW"."STACKLINE".RATINGSREVIEWS
+UNION ALL 
+SELECT COUNT(*) FROM "DEV_RAW"."STACKLINE".CONTENTSCORE
+
+-- ORIGINAL VIEW CODE
+WITH STACKLINE_RETAILERS AS 
+( SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE"."SALES"
+  UNION 
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE"."PROMOTIONS"
+  UNION 
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE"."RATINGSREVIEWS"
+  UNION 
+  SELECT RETAILERID,
+         RETAILERSKU,
+         WEEKID
+  FROM "PROD_RAW"."STACKLINE"."CONTENTSCORE"
+)
+SELECT COUNT(*) as SOURCE_COUNT FROM  STACKLINE_RETAILERS AS R 
+
+-- prowl
+select * from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES;
+
+--prowl target
+select COUNT(*) as "Target_Count" from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE SRC_SYS_KEY = 'PROWL' AND CURR_RCRD_FLAG ='N' OR ORP_RCRD_FLAG ='N' OR DEL_FROM_SRC_FLAG = 'N'
+select COUNT(*)  from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE ISO_COUNTRY_CODE ='US'
+select COUNT(*) as "Target_Count" from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE SRC_SYS_KEY = 'PROWL'  and DEL_FROM_SRC_FLAG is  null  
+
+select country_iso_code, count(*) AS TARGET_COUNT
+from test_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'PROWL'
+group by 1
+limit 10;
+
+--source
+select 'CA', COUNT(*) AS SOURCE_CNT
+from DEV_raw.prowl.VW_PROWL_FULL_URL_LIST_CANADA WHERE REPORTS = 'Y'
+UNION ALL
+select 'US', COUNT(*) AS SOURCE_CNT
+from dev_raw.prowl.VW_PROWL_FULL_URL_LIST_US WHERE REPORTS = 'Y';
+
+DESC TABLE TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+SELECT COUNT(*) FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES  WHERE SRC_SYS_KEY = 'PROWL' AND  COUNTRY_ISO_CODE = 'US' 
+SELECT COUNT(*) FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES  WHERE SRC_SYS_KEY = 'PROWL' AND  COUNTRY_ISO_CODE = 'CANADA'
+
+select COUNT(*) as "Target_Count" from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE SRC_SYS_KEY = 'PROWL'  and DEL_FROM_SRC_FLAG is  null  
+show primary keys in DEV_EDW.CONSOLIDATED_09282022.EDW_PRICING_COMPETITOR_SALES
+SHOW PRIMARY KEYS IN dev_raw.prowl.VW_PROWL_FULL_URL_LIST_CANADA
+SHOW PRIMARY KEYS IN PROD_RAW.prowl.PROWL_FULL_URL_LIST_US
+SHOW PRIMARY KEYS IN PROD_RAW.prowl.PROWL_FULL_URL_LIST_US
+USE DATABASE SEQUENTUM
+desc table DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+
+-- CHK FOR NULL VALUES
+select * from (select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY from  TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where PRC_COMPTTR_SLS_KEY is  null and SRC_SYS_KEY IS  null and SRC_SYS_KEY = 'STACKLINE' )  
+select * from (select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY from  DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+where PRC_COMPTTR_SLS_KEY is not null and SRC_SYS_KEY IS NOT null and SRC_SYS_KEY = 'PROWL' ) 
+
+
+-- CHECK FOR DUPLICATES
+
+SELECT SRC_SYS_KEY,COUNT(*)
+FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+WHERE SRC_SYS_KEY='STACKLINE' 
+group by 1 having count(*)>1;
+
+-- check for flags
+select CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'STACKLINE' 
+
+--The Number of Orphan Records from source table is identifined by  Orphan flag "Y"
+select ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'STACKLINE' AND ORP_RCRD_FLAG = 'Y' AND DEL_FROM_SRC_FLAG = 'Y'
+
+-- chck for flags and expiry date
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,min(EFF_DTE), max(EXPR_DTE),CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG HAVING SRC_SYS_KEY = 'STACKLINE'
+
+-- chk for currency and loaddts (DETLA LOAD)
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE as LOADDTS,CRNCY_KEY
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE,CRNCY_KEY 
+HAVING SRC_SYS_KEY = 'STACKLINE'AND LOADDTS >= '2022-10-18 15:10:21.845'
+
+-- check for brnad_lkey , sbu_lkey
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY,COMPTTR_BRAND_LKEY,CUST_CHNL_LKEY
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY,COMPTTR_BRAND_LKEY,CUST_CHNL_LKEY HAVING SRC_SYS_KEY = 'SEQUENTUM'
+
+desc table DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+-- PROWL TARGET COUNT
+select country_iso_code, count(*) AS TARGET_COUNT
+from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'PROWL'
+group by 1
+limit 10;
+
+
+
+-- prowl source COUNT
+select COUNT(*) as "Source_Count" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA" 
+select COUNT(*) as "Source_Count" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US" 
+
+select EVENTDTS  from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US"
+-- 45490 less in view
+SELECT * FROM "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_CHANGES" WHERE REPORTS = 'Y'
+SELECT * FROM "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_CHANGES" 
+
+select COUNT(*) as "Source_Count" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"  WHERE REPORTS = 'Y'
+select COUNT(*) as "Source_Count" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US"  WHERE REPORTS = 'Y'
+
+
+show primary keys in "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+desc table "PROD_RA W"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+show primary keys in "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US"
+
+
+-- SEQUENTUM
+USE DATABASE SEQUENTUM
+SELECT * FROM "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES" WHERE SRC_SYS_KEY = 'SEQUENTUM' LIMIT 20
+show primary keys in "DEV_EDW"."CONSOLIDATED"."EDW_PRICING_COMPETITOR_SALES" 
+select * from "SEQUENTUM"."PUBLIC"."AMAZON_CA_COMPR_PRODUCTS" limit 10
+SHOW PRIMARY KEYS IN "SEQUENTUM"."PUBLIC"."AMAZON_CA_COMPR_PRODUCTS"
+SHOW PRIMARY KEYS IN "SEQUENTUM"."PUBLIC"."AMAZON_US_COMPR_PRODUCTS"
+SHOW PRIMARY KEYS IN "SEQUENTUM"."PUBLIC"."LOWES_COMPR_PRODUCTS"
+
+-- target 
+USE DATABASE TEST_EDW
+select COUNT(*) as "Target_Count" from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE SRC_SYS_KEY = 'SEQUENTUM'
+select SRC_SYS_KEY,count(*) AS TARGET_COUNT
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'SEQUENTUM'
+group by 1
+limit 10;
+
+desc table DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+
+-- SOURCE SOUNT
+select SRC_SYS_KEY from DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE COUNT(*) > 1 AND SRC_SYS_KEY = 'SEQUENTUM' AND  COUNT(*) > 1
+
+select 'CA', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."AMAZON_CA_COMPR_PRODUCTS" 
+UNION ALL
+select 'US', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."AMAZON_US_COMPR_PRODUCTS" 
+UNION ALL
+select 'CA', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."LOWES_COMPR_PRODUCTS"
+UNION ALL
+select 'US', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."HOMEDEPOT_COMPR_PRODUCTS"
+UNION ALL
+select 'US', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."HOMEDEPOT_PRICING"
+UNION ALL
+select 'US', COUNT(*) AS SOURCE_COUNT
+from "SEQUENTUM"."PUBLIC"."LOWES_PRICING"
+
+
+--  source count
+WITH DEDUPE_SRC_AMZ_US as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_AMAZON_US_COMPR_PRODUCTS
+), DEDUPE_SRC_AMZ_CA as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_AMAZON_CA_COMPR_PRODUCTS
+  ), DEDUPE_SRC_LS_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_LOWES_PRICING
+), DEDUPE_SRC_HD_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_HOMEDEPOT_PRICING
+), DEDUPE_SRC_HD_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_HOMEDEPOT_COMPR_PRODUCTS
+), DEDUPE_SRC_LS_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM TEST_RAW.SEQUENTUM.VW_LOWES_COMPR_PRODUCTS
+)
+SELECT 'AMZ_US', COUNT(*) AS SOURCECOUNT
+FROM DEDUPE_SRC_AMZ_US --1
+WHERE ROW_NO = 1
+UNION ALL
+SELECT 'AMZ_CA', COUNT(*)
+FROM DEDUPE_SRC_AMZ_CA --2
+WHERE ROW_NO = 1
+UNION ALL
+SELECT 'HD_PRC', COUNT(*)
+FROM DEDUPE_SRC_HD_PRC --3
+WHERE ROW_NO = 1
+UNION ALL
+SELECT 'LS_PRC', COUNT(*)
+FROM DEDUPE_SRC_LS_PRC --4
+WHERE ROW_NO = 1
+UNION ALL
+SELECT 'HD_COMPR', COUNT(*)
+FROM DEDUPE_SRC_HD_COMPR --5
+WHERE ROW_NO = 1
+UNION ALL
+SELECT 'LS_COMPR', COUNT(*)
+FROM DEDUPE_SRC_LS_COMPR --6
+WHERE ROW_NO = 1;
+
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."AMAZON_CA_COMPR_PRODUCTS" 
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."AMAZON_US_COMPR_PRODUCTS" 
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."LOWES_PRICING" 
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."HOMEDEPOT_PRICING" 
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."LOWES_COMPR_PRODUCTS" 
+select COUNT(*) as "Source_Count" from "SEQUENTUM"."PUBLIC"."HOMEDEPOT_COMPR_PRODUCTS" 
+
+select COUNT(*) as "Source_Count" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA" WHERE WEEK_ID <= 202231
+desc table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+
+-- CHK FOR NULL VALUES
+select * from (select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY from  TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+where PRC_COMPTTR_SLS_KEY is null and SRC_SYS_KEY is null AND SRC_SYS_KEY = 'SEQUENTUM')
+
+select * from (select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY from  TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+where PRC_COMPTTR_SLS_KEY is not null and SRC_SYS_KEY IS NOT null and SRC_SYS_KEY = 'SEQUENTUM' ) 
+
+
+-- CHECK FOR DUPLICATES
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,COUNT(*) from  DEV_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES 
+where PRC_COMPTTR_SLS_KEY is not null and SRC_SYS_KEY IS NOT null and SRC_SYS_KEY = 'STACKLINE' GROUP BY 1,2
+
+-- check for flags
+select SRC_SYS_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+where SRC_SYS_KEY = 'STACKLINE' 
+
+-- chck for flags and expiry date
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,min(EFF_DTE), max(EXPR_DTE),CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG HAVING SRC_SYS_KEY = 'STACKLINE'
+
+-- chk for currency and loaddts
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE as LOADDTS,CRNCY_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG
+from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,ZONE3_LOD_DTE,CRNCY_KEY,CURR_RCRD_FLAG,ORP_RCRD_FLAG,DEL_FROM_SRC_FLAG HAVING SRC_SYS_KEY = 'STACKLINE'
+
+-- check for brnad_lkey , sbu_lkey
+select PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY
+from test_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+group by PRC_COMPTTR_SLS_KEY,SRC_SYS_KEY,BRAND_LKEY,SBU_LKEY HAVING SRC_SYS_KEY = 'SEQUENTUM'
+
+select * from "SEQUENTUM"."PUBLIC"."AMAZON_US_COMPR_PRODUCTS" limit 10
+desc table "SEQUENTUM"."PUBLIC"."AMAZON_CA_COMPR_PRODUCTS"
+desc table "SEQUENTUM"."PUBLIC"."AMAZON_US_COMPR_PRODUCTS"
+desc table "SEQUENTUM"."PUBLIC"."LOWES_PRICING"
+desc table "SEQUENTUM"."PUBLIC"."HOMEDEPOT_PRICING"
+desc table "SEQUENTUM"."PUBLIC"."LOWES_COMPR_PRODUCTS"
+desc table "SEQUENTUM"."PUBLIC"."HOMEDEPOT_COMPR_PRODUCTS"
+
+select * from "DEV_EDW"."EDW_DBT_VIEWS"."EDW_PROWL_FULL_URL_LIST_CANADA_PRICING_COMPETITOR_SALES_VW"
+select * from "DEV_EDW"."CONSOLIDATED_09282022"."EDW_PRICING_COMPETITOR_SALES" LIMIT 10000 
+desc table "DEV_EDW"."CONSOLIDATED_09282022"."EDW_PRICING_COMPETITOR_SALES"
+
+
+  "select LID,MODEL_NAME,SRCTBLNAME,SRCSCHEMA,DSTTBLNAME,JOB_TIME_START,JOB_TIME_END,
+TIMEDIFF(minute,JOB_TIME_START,JOB_TIME_END) as duration,LOADSTATUS,
+ROWREAD as source_count,ROWINSERTED,ROWUPDATED,CRETEDDATETIME
+from TEST_EDW.CONSOLIDATED.LOGGING where LID in
+(select SID from TEST_EDW.CONSOLIDATED.METADATELOADDT where MODEL_NAME LIKE ('EDW_PRICING_WATERFALL_QADPE'))
+and LOADSTATUS='END'
+order by job_time_start desc"
+
+--In entity_changes, the number of deletions from source table is identifined by the number of delete flags as Y
+Select count(*) from
+(select PRC_COMPTTR_SLS_KEY as key from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES  where SRC_SYS_KEY ='PROWL'
+and DEL_FROM_SRC_FLAG='Y') 
+Select count(*) from
+(select PRC_COMPTTR_SLS_KEY as key from TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES  where SRC_SYS_KEY ='PROWL'
+and DEL_FROM_SRC_FLAG='N')
+DESC TABLE TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES
+
+
+
+-- ORPHAN FLAG
+SELECT COUNT(*) FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE ORP_RCRD_FLAG = 'N' AND SRC_SYS_KEY ='PROWL'
+SELECT COUNT(*) FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES WHERE ZONE3_LOD_DTE 
+SELECT  ZONE3_LOD_DTE FROM TEST_EDW.CONSOLIDATED.EDW_PRICING_COMPETITOR_SALES  WHERE   WEEKID >= 202230
+select * from 
+-- DIFFERENCE IN TIM
+select LID,MODEL_NAME,SRCTBLNAME,SRCSCHEMA,DSTTBLNAME,JOB_TIME_START,JOB_TIME_END,
+TIMEDIFF(minute,JOB_TIME_START,JOB_TIME_END) as duration,LOADSTATUS,
+ROWREAD as source_count,ROWINSERTED,ROWUPDATED,CRETEDDATETIME
+from TEST_EDW.CONSOLIDATED.LOGGING where LID in
+(select SID from TEST_EDW.CONSOLIDATED.METADATELOADDT where MODEL_NAME LIKE ('EDW_PRICING_WATERFALL_QADPE'))
+and LOADSTATUS='END'
+order by job_time_start desc"
+
+-- to update null values 
+-- to update few queries specified above
+-- to check for key cols
+
+
+ -- how to find the starting of the week
+SET IsoWeek = '202223';
+
+SET tyear = SUBSTR( $IsoWeek, 1, 4);
+SET tweek = SUBSTR( $IsoWeek, 5);
+
+SELECT LAST_DAY(TO_DATE( $tyear , 'YYYY'), week) AS last_day_of_first_week,
+DATEADD( day, 1, last_day_of_first_week ) AS first_day_of_second_week,
+IFF( $tweek = 1, TO_DATE( $tyear, 'YYYY'), DATEADD( week, $tweek -1, first_day_of_second_week  )) as beginning_of_the_week,
+DATEADD( day, 6, beginning_of_the_week ) AS end_week
+
+2022-06-06

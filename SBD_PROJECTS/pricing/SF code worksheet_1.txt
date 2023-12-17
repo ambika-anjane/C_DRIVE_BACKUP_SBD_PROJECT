@@ -1,0 +1,801 @@
+use schema similarweb
+select * from bounce_rate where TIME_PERIOD  between '2022-05-01 00:00:00.000' and '2022-06-30 00:00:00.000'
+select count(*) from bounce_rate order by eventdts
+select distinct(country_code) from average_visit_duration
+use schema CONSOLIDATED
+"DEV_EDW"."CONSOLIDATED"select * from average_visit_duration where country_code in ('us','ca','mx')
+select * from bounce_rate where country_code in ('us','ca','mx')
+select * from Keyword_Competitors where country_code in ('us','ca','mx')
+select distinct(device) from  Keyword_Competitors
+select * from Pages_visit where country_code in ('us','ca','mx')
+select * from Pages_visit where device in ('mobile')
+use schema IHSMARKIT
+desc table IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING
+use schema numerator
+set source_system = 'SIMILARWEB'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+select domain from average_visit_duration
+-- main query
+use database DEV_RAW
+use schema similarweb
+select * from "DEV_RAW"."SIMILARWEB"."Traffic_sources_overview"
+
+select * from  KEYWORD_ANALYSIS_LANDING
+where source_type = 'organic'
+and keyword = 'car'
+and data <> ''
+and country_code  in('br','mx','co','cl')  order by source_type,time_period
+
+select * from  KEYWORD_ANALYSIS_LANDING
+where source_type = 'organic'
+and data =''
+and country_code  in('nl','dk','de','fr','be','at','uk','au','es','fi','ie','no','fi')  
+order by source_type,time_period
+
+select * from  KEYWORD_ANALYSIS_LANDING
+where source_type = 'organic'
+and data <> ''
+and country_code  in('br','mx','co','cl') 
+order by source_type,time_period
+
+use schema similarweb
+
+select * from WEB_OUTGOING_REFERRALS_LANDING
+where device = 'mobile'
+and domain = 'proindustrial.com'
+and data = ''
+and country_code = 'ca' order by device,time_period
+
+select * from UNIQUE_VISITORS_LANDING
+where device = 'desktop'
+and domain = 'proindustrial.com'
+and data = ''
+and country_code = 'ca' order by device,time_period
+-- PULLING DATA FROM THE URL
+select * from KEYWORD_COMPETITORS_LANDING
+where device = 'desktop'
+and domain = 'amazon.ca'
+and data <> ''
+and country_code  = 'ca' order by device,time_period
+
+-- CHECKING FOR EMPTY DATA IN THE TABLES
+select * from AVERAGE_VISIT_DURATION_LANDING where data ='' and country_code  in('ca','us')
+select * from BOUNCE_RATE_LANDING where data ='' and country_code  in('ca','us')
+select * from TRAFFIC_SOURCES_OVERVIEW_LANDING where data ='' and country_code  in('ca','us')
+select * from TRAFFIC_SOURCES_LANDING where data ='' and country_code  in('ca','us')
+select * from PAGES_VISIT_LANDING where data ='' and country_code  in('ca','us')
+--LAG
+-- LANDING TABLE WITH DATA
+select * from WEB_OUTGOING_REFERRALS_LANDING where data <> '' 
+and country_code  in('br','mx','co','cl') 
+and device in ('desktop','mobile') and domain = 'americanas.com.br'
+order by device,time_period
+
+select * from WEB_OUTGOING_REFERRALS_LANDING where data = ''
+and country_code  in('br','mx','co','cl') 
+and device in ('desktop','mobile') and domain = 'americanas.com.br'
+order by device,time_period
+
+-- NA
+select * from VISITS_LANDING where data <> ''
+and country_code  in('us','ca') 
+and device in ('desktop','mobile') and domain = 'amazon.ca'
+order by device,time_period
+
+select * from VISITS_LANDING where data=''
+and country_code  in('us','ca') 
+and device in ('desktop','mobile') 
+order by device,time_period
+
+--EMEA
+select * from WEB_OUTGOING_REFERRALS_LANDING where data =''
+and country_code  in('nl','dk','de','fr','be','at','uk','au','es','fi','ie','no','fi') 
+and device in ('desktop','mobile') and domain = 'angliatoolcentre.co.uk'
+order by device,time_period
+-- EMEA
+select * from  WEB_OUTGOING_REFERRALS_LANDING where data <> ''
+and country_code in('nl','dk','de','fr','be','at','uk','au','es','fi','ie','no','fi') 
+and device in ('desktop','mobile') and domain = 'blackanddecker.at'
+order by device,time_period
+
+select * from  TRAFFIC_SOURCES_OVERVIEW_LANDING where data <> ''
+and country_code = 'uk'
+and device in ('desktop','mobile') and domain = 'blackanddecker.at'
+order by device,time_period
+
+
+-- LANDING TABLE WITHOUT DATA
+select * from WEB_REFERRALS_LANDING where data = '' 
+and country_code  in('br','mx','co','cl') 
+and device = 'desktop'and domain = 'americanas.com.br'
+order by device,time_period
+
+-- not getting data (FOR THIS LANDING TABLE)
+select * from VISITS_LANDING where data <> '' 
+and country_code  in('br','mx','co','cl') 
+and source_type = 'organic'
+and keyword = 'car'
+order by keyword,time_period
+
+-- LANDING TABLE WITHOUT DATA
+select * from VISITS_LANDING where data ='' and country_code  in('cl','br','mx','co','cl')
+
+
+SELECT DISTINCT(TIME_PERIOD) FROM KEYWORD_COMPETITORS_LANDING
+select * from PAGE_VIEWS_LANDING where  country_code ='mx' and data = ''
+desc table WEB_OUTGOING_REFERRALS_LANDING
+select * from AVERAGE_VISIT_DURATION_LANDING where data ='' and country_code  in('nl','dk','de','fr','be','at','uk','au','es','fi','ie','no')
+select * from TRAFFIC_SOURCES_OVERVIEW_LANDING where data <> '' and country_code  in('cl','br','mx','co','cl')
+
+
+select * from PAGE_VIEWS_LANDING where  country_code  in('cl','br','mx','co','cl')
+select distinct(country_code) from page_views_landing
+select * from TRAFFIC_SOURCES_OVERVIEW_LANDING where  country_code in('fr','be','at','uk','au','es','fi','ie','no')
+select * from TRAFFIC_SOURCES_LANDING where country_code in('fr','be','at','uk','au','es','fi','ie','no')
+select * from VISITS_LANDING where  country_code in('fr','be','at','uk','au','es','fi','ie','no')
+select * from BOUNCE_RATE_LANDING where country_code in('fr','be','at','uk','au','es','fi','ie','no')
+select * from PAGE_VIEWS_LANDING where country_code in('fr','be','at','uk','au','es','fi','ie','no')
+select count(*)  as " No of Records in WEB_OUTGOING_REFERRALS_LANDING" from WEB_OUTGOING_REFERRALS_LANDING
+
+
+
+select country_code from AVERAGE_VISIT_DURATION_LANDING
+
+desc table WEB_REFERRALS_LANDING
+select * from VISITS_LANDING
+select count(*)  as " No of Records in UNIQUE_VISITORS_LANDING" from UNIQUE_VISITORS_LANDING
+
+select count(*)  as " No of Records in SEARCH_VISITS_DISTRIBUTION_LANDING" from SEARCH_VISITS_DISTRIBUTION_LANDING
+select count(*)  as " No of Records in TRAFFIC_SOURCES_OVERVIEW_LANDING" from TRAFFIC_SOURCES_OVERVIEW_LANDING
+select count(*)  as " No of Records in KEYWORD_ANALYSIS_LANDING" from KEYWORD_ANALYSIS_LANDING
+select count(*)  as " No of Records in PAGE_VIEWS_LANDING" from PAGE_VIEWS_LANDING
+
+select count(*)  as " No of Records in VISITS_LANDING" from VISITS_LANDING
+select domain, data from bounce_rate where country_code = 'us' and TIME_PERIOD  between '2022-05-01 00:00:00.000' and '2022-06-30 00:00:00.000'
+
+select get_ddl('TABLE','NUMERATOR')
+use schema ihsmarkit
+select * from IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING
+create table HTAS_BRAND_SHARE_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+drop table OUTDOOR_BRAND_SHARE_LANDING
+create table OUTDOOR_BRAND_SHARE_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+drop table Power_Tools_Brand_Share_LANDING
+create table Power_Tools_Brand_Share_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+drop table Total_Tools_Outdoors_no_Lighting_Brand_Share_LANDING
+create table Total_Tools_Outdoors_no_Lighting_Brand_Share_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+drop table Quarterly_Brand_Share_LANDING
+create table Quaretly_Brand_ATMSC_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+drop table Rolling_Twelve_LANDING
+create table Rolling_Twelve_LANDING
+(METRIC VARCHAR comment 'Market metric measured by Numerator',
+PRODUCT_AND_CATEGORY VARCHAR comment 'Product parameter for data pull',
+RETAILER VARCHAR comment 'Customer group parameter split for data pull',
+BRAND VARCHAR comment 'Product brand',
+TIME_SCALE VARCHAR comment 'Scale of time frame (e.g. 1 Month Ending, Quarter Ending)',
+TIME_PERIOD VARCHAR comment 'Last date to denote end of time_scale',
+TIME_COVERAGE VARCHAR comment 'Coverage of time period (e.g. Rolling)',
+VALUE VARCHAR comment 'Metric value per the associated parameters',
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (METRIC,PRODUCT_AND_CATEGORY,RETAILER,BRAND,TIME_SCALE,TIME_PERIOD,TIME_COVERAGE));
+
+describe table  "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_ECON_MNEMONIC_MAPPING_LANDING"
+
+create schema IHSMARKIT_PHASE2
+
+drop table ihs_china_regional_series_LANDING
+create table ihs_china_regional_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 2
+drop table ihs_china_regional_historical_series_LANDING
+create table ihs_china_regional_historical_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 3
+drop table ihs_financial_markets_historical_series_LANDING
+create table ihs_financial_markets_historical_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 4
+create table ihs_economic_global_economy_historical_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 5
+create table ihs_economic_global_economy_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 6
+
+create table ihs_economic_global_economy_new_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 7
+create table ihs_pricing_and_purchasing_forecast_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- TABLE 8
+create table ihs_economic_us_economy_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 9
+create table ihs_economic_world_market_monitor_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 10
+create table ihs_ecomomic_construction_canada_series_LANDING
+(SOURCE_ID VARCHAR ,
+SERIES_JSON_DATA VARCHAR,
+OBSERVATIONS_JSON_DATA VARCHAR,
+OBSERVATIONS_LINK VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR,
+PRIMARY KEY (SOURCE_ID));
+
+-- table 11
+create table ihs_economic_Construction_Global_LANDING
+(CONCEPT VARCHAR,
+Geography VARCHAR,
+UNIT VARCHAR,
+MONTHS VARCHAR,
+VALUE VARCHAR,
+LOADDTS VARCHAR,
+EVENTDTS VARCHAR,
+REC_SRC VARCHAR,
+ROW_SQN VARCHAR);
+
+
+use schema numerator
+use schema numerator
+select get_ddl('SCHEMA','IHSMARKIT')
+use schema IHSMARKIT
+
+select get_ddl('TABLE','IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING')
+select * from "DEV_RAW"."NUMERATOR"."HTAS_BRAND_SHARE_LANDING"
+
+select * from "DEV_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+select * from "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select * from  "DEV_RAW"."NUMERATOR"."QUARTERLY_BRAND_ATMSC_LANDING"
+select * from  "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+-- 87120
+select * from  "DEV_RAW"."NUMERATOR_PHASE2"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+
+select count(*) as "Number of Records in OUTDOOR_BRAND_SHARE_LANDING" from "DEV_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+
+
+-- PROWL
+use schema PROWL
+truncate table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+truncate table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select * from  "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+select * from  "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+describe table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+
+alter table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+drop column BRAND;
+
+truncate table "DEV_RAW"."NUMERATOR_PHASE2"."ROLLING_TWELVE_LANDING"
+alter table "DEV_RAW"."NUMERATOR_PHASE2"."ROLLING_TWELVE_LANDING" rename column RETAILER to SBD_Quarterly_Scorecard_Stores;
+alter table "DEV_RAW"."NUMERATOR_PHASE2"."QUARTERLY_BRAND_ATMSC_LANDING" rename column RETAILER to SBD_Quarterly_Scorecard_Stores;
+
+use schema "PROWL"
+truncate table  "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+select * from "TEST_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA"
+select count(*) as "Number of Records in PROWL_FULL_URL_LIST_CANADA_LANDING" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+describe table  "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+
+
+truncate table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select * from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select count(*) as "Number of Records in PROWL_FULL_URL_LIST_US_LANDING" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+describe table  "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+
+use schema EUROMONITOR
+set source_system = 'NUMERATOR'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+select count(*) as "No of records in PROWL_FULL_URL_LIST_US" from PROWL_FULL_URL_LIST_US
+select * from DATAMETRICS_INFLATION
+select * from ONLINE_TRAFFIC
+
+
+use schema SI_MARKETPLACE_REF_DATA
+use schema NOAA_WEATHER
+select * from SI_ECON_MNEMONIC_MAPPING
+select count(*) as "No of Records in SI_ECON_MNEMONIC_MAPPING" from "SI_ECON_MNEMONIC_MAPPING"
+
+ 
+
+select * from "TEST_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING"
+
+
+-- Numerator_phase_2'
+select * from "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select * from "DEV_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+
+
+select count(*) as "Number of Records in OUTDOOR_BRAND_SHARE_LANDING" from "QUARTERLY_BRAND_SHARE_LANDING"
+
+
+
+
+select * from "DEV_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+truncate table "TEST_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+
+select * from  "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+
+"DEV_RAW"
+select * from "TEST_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select * from  "DEV_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+select * from  "DEV_RAW"."NUMERATOR_PHASE2"."ROLLING_TWELVE_LANDING"
+select * from  "TEST_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+
+-- 1st table
+select * from "TEST_RAW"."NUMERATOR"."HTAS_BRAND_SHARE_LANDING"
+select count(*) as "Number of Records in HTAS_BRAND_SHARE_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."HTAS_BRAND_SHARE_LANDING"
+describe table  "DEV_RAW"."NUMERATOR_PHASE2"."HTAS_BRAND_SHARE_LANDING"
+
+-- second table 
+select * from "TEST_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+select * from "DEV_RAW"."NUMERATOR_PHASE2"."OUTDOOR_BRAND_SHARE_LANDING"
+select * from "DEV_RAW"."NUMERATOR_PHASE2"."OUTDOOR_BRAND_SHARE_CHANGES" where CASPIAN_CHANGEINDICATOR_CODE = 'U'
+select count(*) as "Number of Records in OUTDOOR_BRAND_SHARE_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."OUTDOOR_BRAND_SHARE_LANDING"
+describe table  "DEV_RAW"."NUMERATOR_PHASE2"."OUTDOOR_BRAND_SHARE_LANDING"
+
+-- third table 
+
+select * from "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select * from "DEV_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+select count(*) as "Number of Records in POWER_TOOLS_BRAND_SHARE_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."POWER_TOOLS_BRAND_SHARE_LANDING"
+describe table  "DEV_RAW"."YAHOOFINANCE"."STOCKPRICE_ETF_LANDING"
+
+-- fourth table
+use schema numerator
+select * from  "DEV_RAW"."NUMERATOR"."QUARTERLY_BRAND_SHARE_LANDING"
+select count(*) as "Number of Records in QUARTERLY_BRAND_ATMSC_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."QUARTERLY_BRAND_ATMSC_LANDING"
+describe table  "DEV_RAW"."NUMERATOR"."QUARTERLY_BRAND_ATMSC_LANDING"
+
+-- fifth table
+select * from  "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+select count(*) as "Number of Records in ROLLING_TWELVE_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."ROLLING_TWELVE_LANDING"
+describe table  "DEV_RAW"."NUMERATOR_PHASE2"."ROLLING_TWELVE_LANDING"
+
+-- sixth table
+select * from  "TEST_RAW"."NUMERATOR"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+select count(*) as "Number of Records in TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING" from "DEV_RAW"."NUMERATOR_PHASE2"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+describe table  "DEV_RAW"."NUMERATOR_PHASE2"."TOTAL_TOOLS_OUTDOORS_NO_LIGHTING_BRAND_SHARE_LANDING"
+
+use schema numerator
+
+select * from "DEV_RAW"."NUMERATOR"."SHOPPER_METRIC_HAND_TOOLS_AND_OPE_LANDING"
+select * from "DEV_RAW"."NUMERATOR"."SHOPPER_METRIC_POWER_TOOLS_AND_PTA_LANDING"
+
+USE schema fred
+select * from "DEV_RAW"."FRED"."FRED_SERIES_OBSERVATIONS_DATA_LANDING"
+
+USE schema 
+select * from "PROD_RAW"."NOAA_WEATHER"."STORMEVENTS_DETAILS_LANDING"
+select * from "PROD_RAW"."NOAA_WEATHER"."STORM_FATALITIES_LANDING"
+select * from "PROD_RAW"."NOAA_WEATHER"."STORM_LOCATIONS_LANDING"
+
+use schema SI_MARKETPLACE_REF_DATA
+
+select * from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING"
+select count(*) as "Number of Records in SI_BRAND_MANUFACTURER_MAPPING" from "DEV_RAW"."SI_MARKETPLACE_REF_DATA"."SI_BRAND_MANUFACTURER_MAPPING_LANDING"
+
+use schema numerator
+select * from "DEV_RAW"."NUMERATOR"."DF1_REGION_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_LANDING"
+
+use schema IHSMARKIT
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING"
+select * from "DEV_RAW"."IHSMARKIT"."IHS_CHINA_REGIONAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_PRICING_AND_PURCHASING_FORECAST_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_PRICING_AND_PURCHASING_FORECAST_SERIES_LANDING"
+
+use schema MOODYS
+select * from moodys_all_indicators_landing
+select count(*) as "Number of Records in moodys_all_indicators_landing" from "DEV_RAW"."MOODYS".moodys_all_indicators_landing
+
+truncate table "DEV_RAW"."IHSMARKIT"."IHS_CHINA_REGIONAL_HISTORICAL_SERIES_LANDING"
+select * from "DEV_RAW"."IHSMARKIT"."IHS_CHINA_REGIONAL_HISTORICAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_CHINA_REGIONAL_HISTORICAL_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_CHINA_REGIONAL_HISTORICAL_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_CHINA_REGIONAL_HISTORICAL_SERIES_LANDING"
+
+select * from "TEST_RAW"."NUMERATOR"."POWER_TOOLS_BRAND_SHARE_LANDING"
+
+truncate table "TEST_RAW"."IHSMARKIT"."IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES_LANDING"
+select * from "DEV_RAW"."IHSMARKIT"."IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_FINANCIAL_MARKETS_HISTORICAL_SERIES_LANDING"
+
+
+-- to load from here
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_HISTORICAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_GLOBAL_ECONOMY_HISTORICAL_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_HISTORICAL_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_HISTORICAL_SERIES_LANDING"
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_GLOBAL_ECONOMY_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_SERIES_LANDING"
+
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_GLOBAL_ECONOMY_NEW_SERIES_LANDING"
+
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING" 
+select * from IHS_PRICING_AND_PURCHASING_FORECAST_SERIES_LANDING at(offset => -172800*1)
+describe table "DEV_RAW"."IHSMARKIT"."IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING"
+show tables
+
+use schema fred
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_US_ECONOMY_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_US_ECONOMY_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_US_ECONOMY_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_US_ECONOMY_SERIES_LANDING"
+
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES_LANDING"
+select count(*) as "Number of Records inIHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_WORLD_MARKET_MONITOR_SERIES_LANDING"
+
+
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_CANADA_SERIES_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_CANADA_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_CONSTRUCTION_CANADA_SERIES_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_CANADA_SERIES_LANDING"
+
+
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING"
+describe table "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING" from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_CONSTRUCTION_GLOBAL_LANDING"
+
+
+
+use schema similarweb
+select * from "DEV_RAW"."SIMILARWEB"."ONLINE_TRAFFIC_LANDING"
+select * from "DEV_RAW"."SIMILARWEB"."CONVERSION_RATE_LANDING"
+
+-- to proceed with other tables
+use schema PROWL
+select * from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_CANADA_LANDING"
+desc table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select count(*) as "Number of Records in PROWL_FULL_URL_LIST_US_LANDING" from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+
+use schema euromonitor
+
+truncate table "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+select count(*) as "Number of Records in GLOBAL_MARKET_SIZEIN_VALUE_LANDIN" from "DEV_RAW"."EUROMONITOR"."GLOBAL_MARKET_SIZEIN_VALUE_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MARKET_SIZEIN_VALUE_LANDING" from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VALUE_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MARKET_SIZEIN_VOLUME_LANDING" from "DEV_RAW"."EUROMONITOR"."MARKET_SIZEIN_VOLUME_LANDING"
+
+truncate table "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select * from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.CHANNEL_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."CHANNEL_DATA_LANDING"
+
+select * from "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+describe table "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.MANUFACTURER_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."MANUFACTURER_DATA_LANDING"
+
+select * from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.BRAND_DATA_LANDING" from "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+describe table  "DEV_RAW"."EUROMONITOR"."BRAND_DATA_LANDING"
+
+
+select * from "DEV_RAW"."EUROMONITOR"."GROWTH_TRENDS_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.GROWTH_TRENDS_LANDING" from "DEV_RAW"."EUROMONITOR"."GROWTH_TRENDS_LANDING"
+
+
+select * from "DEV_RAW"."EUROMONITOR"."SOURCES_LANDING"
+select count(*) as "Number of Records in DEV_RAW.EUROMONITOR.SOURCES_LANDING" from "DEV_RAW"."EUROMONITOR"."SOURCES_LANDING"
+
+select * from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_EXCHANGERATE_LANDING"
+select count(*) as "Number of Records in DEV_RAW.DATAMETRICS_EXCHANGERATE_LANDING" from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_EXCHANGERATE_LANDING"
+
+select * from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_INFLATION_LANDING"
+select count(*) as "Number of Records in DEV_RAW.DATAMETRICS_INFLATION_LANDING" from "DEV_RAW"."EUROMONITOR"."DATAMETRICS_INFLATION_LANDING"
+
+
+select country,
+       description,
+       row_sqn,
+       sum(case when tbl = 'landing' then counts else 0 end) as landing_counts,
+       sum(case when tbl = 'landing' then 0 else counts end) as target_counts 
+from (
+select country, description, row_sqn, 'landing' as tbl, count(*) as counts
+from dev_raw.euromonitor.sources_landing
+  where 1 =1
+--  and loaddts = '2022-06-02 23:30:43.893'
+  --and brand in ('Black & Decker', 'Craftsman')
+group by 1, 2, 3
+union
+select country, description, row_sqn, 'target' as tbl, count(*) as counts
+from dev_raw.euromonitor.sources
+  where 1 =1
+--  and loaddts = '2022-06-02 23:30:43.893'
+  --and brand in ('Black & Decker', 'Craftsman')
+group by 1, 2, 3) group by 1, 2, 3
+having landing_counts <> target_counts
+order by 1, 2 , 3;
+
+use schema IHSMARKIT
+select * from "DEV_RAW"."IHSMARKIT"."IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES_LANDING"
+select count(*) as "Number of Records in IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES_LANDING" from "IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES_LANDING"
+
+set source_system = 'NOAA_WEATHER'
+select * from (
+select TABLE_SCHEMA, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') as TABLE_NAME,
+SUM(CASE WHEN RIGHT(TABLE_NAME,13) = '_LANDING_COPY' THEN ROW_COUNT ELSE 0 END) AS LANDING_COPY,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_LANDING' THEN ROW_COUNT ELSE 0 END) AS LANDING,
+SUM(CASE WHEN RIGHT(TABLE_NAME,11) = '_QUARANTINE' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Quarantine,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_VALIDATED' THEN ROW_COUNT ELSE 0 END) AS Zone_0_Validated,
+case when Zone_0_Validated > 0 then ((Zone_0_Quarantine)/(Zone_0_Quarantine + Zone_0_Validated))*100 else 0 end as Quarantine_PCt,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_HISTORY' THEN ROW_COUNT ELSE 0 END) AS ZONE_1,
+SUM(CASE WHEN RIGHT(TABLE_NAME,8) = '_CHANGES' THEN ROW_COUNT ELSE 0 END) AS ZONE_2,
+SUM(CASE WHEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE
+(TABLE_NAME, '_LANDING_COPY',''), '_LANDING',''), '_QUARANTINE', ''), '_VALIDATED', ''),
+'_HISTORY', ''), '_CHANGES', ''), '_HIVE_COPY', '') = TABLE_NAME THEN ROW_COUNT ELSE 0 END) AS Zone_3,
+SUM(CASE WHEN RIGHT(TABLE_NAME,10) = '_HIVE_COPY' THEN ROW_COUNT ELSE 0 END) AS HIVE_COPY,
+Zone_3 - HIVE_COPY as diff,
+max(created) MAX_CREATED
+from information_schema.tables
+where TABLE_TYPE = 'BASE TABLE'
+and table_name not like 'VW_%'
+AND table_schema like $source_system||'%' -- in ('JDEEF', 'QADAR', 'QADBR', 'QADCH', 'QADPE')
+-- AND CREATED >= '2022-02-01'
+GROUP BY 1 ,2)
+--WHERE lower(TABLE_NAME) IN ('p10_0ec_pca_3_trans', 'c11_0ec_pca3', 'shp_tb_litm')
+--WHERE MAX_CREATED >= '2022-02-01'
+order by 1, 2;
+
+use schema NUMERATOR
+select * from  "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."ROLLING_TWELVE_LANDING"
+use schema prowl
+select * from "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+select * from  "DEV_RAW"."NUMERATOR"."QUARTERLY_BRAND_SHARE_LANDING"
+select * from  "DEV_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+truncate table "DEV_RAW"."NUMERATOR"."OUTDOOR_BRAND_SHARE_LANDING"
+
+use schema SI_MARKETPLACE_REF_DATA
+use schema PROWL
+select * from  "DEV_RAW"."COVID"."COVID_VACCINATED_US_LANDING"
+describe table "DEV_RAW"."PROWL"."PROWL_FULL_URL_LIST_US_LANDING"
+
+use schema fred
+select * from "DEV_RAW"."FRED"."FRED_SERIES_OBSERVATIONS_DATA_LANDING"
+select count(*) as "Number of Records in FRED_SERIES_OBSERVATIONS_DATA_LANDING" from "FRED_SERIES_OBSERVATIONS_DATA_LANDING"
+
+use schema meteostat
+select * from "DEV_RAW"."METEOSTAT"."METEOSTAT_STATIONS_LANDING"
+select * from "DEV_RAW"."METEOSTAT"."FINALWEATHERDATA_LANDING"
+select * from "DEV_RAW"."METEOSTAT"."LATLONGBYCITY_US_LANDING"
+select count(*) as "Number of Records in LATLONGBYCITY_US_LANDING" from "LATLONGBYCITY_US_LANDING"
+
+use schema covid
+select * from "DEV_RAW"."COVID"."COVID_VACCINATED_US_LANDING"
+select * from "DEV_RAW"."COVID"."COVID_VACCINE_GLOBAL_LANDING"
+select * from "DEV_RAW"."COVID"."COVID_CASES_GLOBAL_LANDING"
+select * from "DEV_RAW"."COVID"."COVID_CASES_US_LANDING"
+select * from "DEV_RAW"."COVID"."COVID_CASES_GLOBAL_LANDING"  at(offset => -864000*1)
+
+
+use schema NOAA_WEATHER
+select * from STORMEVENTS_DETAILS_LANDING
+select * from STORM_LOCATIONS_LANDING
+select * from STORM_FATALITIES_LANDING
+
+select count(*) as "Number of Records in STORM_FATALITIES_LANDING" from STORM_FATALITIES_LANDING
+
+use schema consolidated
+USE SCHEMA STACKLINE

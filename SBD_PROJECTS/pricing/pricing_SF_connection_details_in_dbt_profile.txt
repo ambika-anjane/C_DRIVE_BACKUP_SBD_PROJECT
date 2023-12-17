@@ -1,0 +1,16 @@
+edw_pricing:
+  outputs:
+    dev: # User-Password config
+      type: snowflake
+      account: sbd_caspian.us-east-1
+      user: Ambika.shyam@sbdinc.com
+      authenticator: externalbrowser
+      role: DEV_EDWBUILD_RW
+      database: DEV_EDW
+      warehouse: DEV_EDW_WH
+      schema: CONSOLIDATED_09282022
+      threads: 5
+      client_session_keep_alive: False
+      query_tag: dbt_special
+  target: dev 
+  
