@@ -1,0 +1,55 @@
+globalMarketSizeInValueConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: GLOBAL_MARKET_SIZEIN_VALUE_LANDING
+
+
+
+marketSizeInValueConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: MARKET_SIZEIN_VALUE_LANDING
+
+
+
+marketSizeInVolumeConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: MARKET_SIZEIN_VOLUME_LANDING
+
+
+channelDataConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: CHANNEL_DATA_LANDING
+
+
+
+manufacturerDataConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: MANUFACTURER_DATA_LANDING
+
+
+
+brandDataConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: BRAND_DATA_LANDING
+
+
+
+growthTrendsConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: GROWTH_TRENDS_LANDING
+
+
+
+sourcesConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: SOURCES_LANDING
+
+
+
+dataMetricsExchangeRateConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: DATAMETRICS_EXCHANGERATE_LANDING
+
+
+dataMetricsInflationConnection:
+  snowflakeSchema: EUROMONITOR
+  snowflakeTableName: DATAMETRICS_INFLATION_LANDING

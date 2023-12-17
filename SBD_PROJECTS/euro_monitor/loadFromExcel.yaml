@@ -1,0 +1,146 @@
+globalMarketSizeInValue:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Global-Market Size in Value
+   srcRecName: GLOBAL_MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: globalMarketSizeInValueConnection
+   Required_Columns:
+    - REGION
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+   
+marketSizeInValue:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Market Size in Value
+   srcRecName: MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: marketSizeInValueConnection
+   Required_Columns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - MARKET_SHARE_PERCENTAGE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+    
+
+marketSizeInVolume:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Market Size in Volume
+   srcRecName: MARKET_SIZEIN_VOLUME_LANDING
+   snowflakeConnection: marketSizeInVolumeConnection
+   Required_Columns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+channelData:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Channel Data
+  srcRecName: CHANNEL_DATA_LANDING
+  snowflakeConnection: channelDataConnection
+  Required_Columns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - CHANNEL
+    - OFFLINE_ONLINE
+    - YEAR
+    - MARKET_SHARE_PERCENTAGE
+    - MARKET_SIZE_UNIT
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+manufacturerData:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Manufacturer Data
+  srcRecName: MANUFACTURER_DATA_LANDING
+  snowflakeConnection: manufacturerDataConnection
+  Required_Columns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - UNITS
+    - YEAR
+    - RANKING
+    - MANUFACTURER_NAME
+    - MANUFACTURER_SHARE
+    - MANUFACTURER_VALUE
+
+brandData:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Brand Data
+  srcRecName: BRAND_DATA_LANDING
+  snowflakeConnection: brandDataConnection
+  Required_Columns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - UNITS
+    - RANKING
+    - YEAR
+    - BRAND_OWNER
+    - BRAND_NAME
+    - BRAND_SHARE
+    - BRAND_VALUE
+
+growthTrends:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Growth Trends
+  srcRecName: GROWTH_TRENDS_LANDING
+  snowflakeConnection: growthTrendsConnection
+  Required_Columns:
+    - COUNTRY
+    - DESCRIPTION
+    
+
+euroSources:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Sources
+  srcRecName: SOURCES_LANDING
+  snowflakeConnection: euroSourcesConnection
+  Required_Columns:
+    - COUNTRY
+    - DESCRIPTION
+    - URL_LINK
+    - TYPE_OF_SOURCE
+    
+
+dataMetricsExchangeRate:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Data Metrics - Exchange Rate
+  srcRecName: DATA_METRICS_EXCHANGERATE_LANDING
+  snowflakeConnection: dataMetricsExchangeRateConnection
+  Required_Columns:
+    - COUNTRY
+    - LOCAL_CURRENCY
+    - LOCAL_CURRENCY_FOR_UNIT_USD
+    - USD_UNIT_FOR_LOCAL_CURRENCY
+    
+
+dataMetricsInflation:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Data Metrics - Inflation
+  srcRecName: DATAMETRICS_INFLATION_LANDING
+  snowflakeConnection: dataMetricsInflationConnection
+  Required_Columns:
+    - COUNTRY
+    - UNIT
+    - YEAR
+    - INFLATION_PERCENTAGE
+    
+
+
+
+
