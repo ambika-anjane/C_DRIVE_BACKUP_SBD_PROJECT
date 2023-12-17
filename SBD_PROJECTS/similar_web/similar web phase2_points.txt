@@ -1,0 +1,9 @@
+1. whats the url used
+2. whats the json structure used
+3. count of the screen shots
+4. 
+
+
+unit test results  : (pending)
+ihs market phase 2
+numerator phase 2
