@@ -1,0 +1,342 @@
+ApplyTransformation(String transformationName, 
+String contentBeforeTransformationName, 
+String contentAfterTransformationName)
+
+{% SiteObjects.SKUs.Where("SKUDepartmentID = 4").OrderBy("SKUPrice").ApplyTransformation ("CMS.Root.ProductTableRow", 
+"CMS.Root.ProductTableHeader", "CMS.Root.ProductTableFooter") %}
+
+
+LKP_DIM_PRODUCTS as(
+SELECT  lookup.PROD_CODE
+from {{ ref('stg_products')}}
+JOIN   {{source('public','lookup_table')}} USING(PROD_CODE)  as lookup 
+)
+SELECT * FROM LKP_DIM_PRODUCTS
+
+SELECT IN_PROD_CODE FROM LKP_DIM_PRODUCTS
+UNION 
+SELECT PROD_CODE FROM SQ_PRODUCTS,
+   --post_hook= "UPDATE {{ ref('stg_products'.'PROD_CODE')}} SET column_name= 'PROD_CODE1'"
+
+
+SELECT IN_PROD_CODE FROM LKP_DIM_PRODUCTS
+UNION 
+SELECT PROD_CODE FROM SQ_PRODUCTS,
+
+
+LKP_DIM_PRODUCTS as(
+SELECT  lookup.PROD_CODE AS IN_PROD_CODE
+from {{ ref('stg_products')}} 
+JOIN   {{source('public','lookup_table')}} USING(PROD_CODE)  as lookup 
+),
+
+UPDATE_PROD AS (
+   update {{ ref('stg_products')}} 
+set PROD_CODE = 'PROD_CODE1'
+)
+SELECT * FROM {{ ref('stg_products')}} 
+
+
+
+LKP_DIM_PRODUCTS as(
+SELECT  a.PROD_CODE AS IN_PROD_CODE
+from {{ ref('stg_products')}}  a ,  {{ ref('stg_products')}}  b 
+WHERE a.PROD_CODE = b.PROD_CODE   
+)
+select * from LKP_DIM_PRODUCTS
+
+
+CCREATE SEQUENCE prod_key
+START 10
+INCREMENT 10
+MINVALUE 10
+OWNED BY dim_products.in_prod_code;
+DROP SEQUENCE prod_key
+select nextval('prod_key') from dim_products
+
+SELECT nextval('prod_key') as prod_key,
+b.PROD_CODE as IN_PROD_CODE
+from PRODUCTS a inner join  dim_products b
+on  b.IN_PROD_CODE  = a.prod_code
+
+select * from dim_products
+
+seq_prod_key as (
+    select next_val('prod_key') as next_val
+),
+
+SELECT S.PROD_CODE ,S.PROD_NAME,S.PROD_DESC,S.PROD_SUBCATEGORY,
+S.PROD_SUBCATEGORY_DESC,S.PROD_CATEGORY,S.PROD_CATEGORY_DESC,S.PROD_WEIGHT_CLASS,
+S.PROD_UNIT_OF_MEASURE,S.PROD_PACK_SIZE,S.PROD_STATUS,S.PROD_LIST_PRICE,S.PROD_MIN_PRICE,S.PROD_TOTAL,S.INSERT_DT,
+S.LAST_UPDATE_DT,S.PROD_VALID,L.prod_key FROM SQ_PRODUCTS S INNER JOIN 
+LKP_DIM_PRODUCTS L 
+where L.PROD_CODE = S.PROD_CODE
+
+select  PROD_CODE,PROD_NAME,PROD_DESC,PROD_SUBCATEGORY,PROD_SUBCATEGORY_DESC,PROD_CATEGORY,PROD_CATEGORY_DESC,PROD_WEIGHT_CLASS,
+PROD_UNIT_OF_MEASURE,PROD_PACK_SIZE,PROD_STATUS,PROD_LIST_PRICE,PROD_MIN_PRICE,PROD_TOTAL,INSERT_DT,
+LAST_UPDATE_DT,PROD_VALID,L.prod_key,E.IN_PROD_CODE FROM SQ_PRODUCTS INNER JOIN 
+LKP_DIM_PRODUCTS L INNER JOIN exptrans E ON  E.IN_PROD_CODE = SQ_PRODUCTS.PROD_CODE
+
+
+25.11.22
+
+nextval(prod_key) as prod_key,
+lkp_dim_products.prod_key,
+L.prod_key,
+
+select * from dim_products
+CREATE TABLE roles(
+   role_id serial PRIMARY KEY,
+   role_name VARCHAR (255) UNIQUE NOT NULL,
+   created_on TIMESTAMP NOT NULL
+);
+
+DIM_PRODUCTS AS (
+ SELECT   PROD_CODE ,
+    PROD_NAME,
+    PROD_DESC,
+    PROD_SUBCATEGORY,
+    PROD_SUBCATEGORY_DESC,
+    PROD_CATEGORY,
+    PROD_CATEGORY_DESC,
+    PROD_WEIGHT_CLASS,
+    PROD_UNIT_OF_MEASURE,
+    PROD_PACK_SIZE,
+    PROD_STATUS,
+    PROD_LIST_PRICE,
+    PROD_MIN_PRICE,
+    PROD_TOTAL,
+    PROD_VALID
+    FROM 
+    rtrtrans
+),
+
+upd_insert_dim_products as (
+    SELECT next_val(se.next_val) as prod_key,
+    PROD_CODE ,
+    PROD_NAME,
+    PROD_DESC,
+    PROD_SUBCATEGORY,
+    PROD_SUBCATEGORY_DESC,
+    PROD_CATEGORY,
+    PROD_CATEGORY_DESC,
+    PROD_WEIGHT_CLASS,
+    PROD_UNIT_OF_MEASURE,
+    PROD_PACK_SIZE,
+    PROD_STATUS,
+    PROD_LIST_PRICE,
+    PROD_MIN_PRICE,
+    PROD_TOTAL,
+    current_timestamp AS  INSERT_DT,
+    current_timestamp AS LAST_UPDATE_DT,
+    PROD_VALID,
+    CONCAT(PROD_KEY,PROD_CODE) AS MD5_CHECKSUM,
+    CASE WHEN PROD_KEY IS NULL THEN  'INSERT' ELSE 0 END AS 'CDC FLAG'
+    current_timestamp AS  PROD_EFF_FROM,
+    current_timestamp AS  PROD_EFF_TO
+    FROM
+    DIM_PRODUCTS
+)
+SELECT * FROM upd_insert_dim_products
+
+
+correct working
+
+{{ config(
+   materialized = 'table',
+   strategy="timestamp",
+  
+    )
+}}
+
+with source as(
+select   
+    PROD_CODE,
+    PROD_NAME,
+    PROD_DESC,
+    PROD_SUBCATEGORY,
+    PROD_SUBCATEGORY_DESC,
+    PROD_CATEGORY,
+    PROD_CATEGORY_DESC,
+    PROD_WEIGHT_CLASS,
+    PROD_UNIT_OF_MEASURE,
+    PROD_PACK_SIZE,PROD_STATUS,
+    PROD_LIST_PRICE,
+    PROD_MIN_PRICE,
+    PROD_TOTAL,
+    INSERT_DT,
+    LAST_UPDATE_DT,
+    PROD_VALID
+from  {{source('public','products')}}
+),
+
+SQ_PRODUCTS as(
+select PROD_CODE,PROD_NAME,PROD_DESC,PROD_SUBCATEGORY,PROD_SUBCATEGORY_DESC,PROD_CATEGORY,PROD_CATEGORY_DESC,PROD_WEIGHT_CLASS,
+PROD_UNIT_OF_MEASURE,PROD_PACK_SIZE,PROD_STATUS,PROD_LIST_PRICE,PROD_MIN_PRICE,PROD_TOTAL,INSERT_DT,
+LAST_UPDATE_DT,PROD_VALID from source
+),
+
+LKP_DIM_PRODUCTS as(
+SELECT nextval('PROD_KEY') as prod_key,
+b.PROD_CODE 
+from SQ_PRODUCTS a inner join  dim_products b
+on b.PROD_CODE  = a.prod_code
+),
+
+exptrans as(
+SELECT PROD_CODE,
+current_timestamp as "systimestamp()"
+FROM LKP_DIM_PRODUCTS
+),
+
+rtrtrans as(
+select  L.prod_key,s.PROD_CODE,s.PROD_NAME,PROD_DESC,PROD_SUBCATEGORY,PROD_SUBCATEGORY_DESC,PROD_CATEGORY,PROD_CATEGORY_DESC,PROD_WEIGHT_CLASS,
+PROD_UNIT_OF_MEASURE,PROD_PACK_SIZE,PROD_STATUS,PROD_LIST_PRICE,PROD_MIN_PRICE,PROD_TOTAL,INSERT_DT,
+LAST_UPDATE_DT,PROD_VALID FROM SQ_PRODUCTS s INNER JOIN 
+LKP_DIM_PRODUCTS L  ON  L.PROD_CODE = s.PROD_CODE
+)
+SELECT * FROM rtrtrans
+
+
+incremenatl code:
+
+{{
+    config(
+        materialized='incremental',
+        unique_key='role_id',
+    )
+}}
+
+select role_id,
+created_on,
+role_name from {{source('public','roles')}}
+
+
+where 1=1
+
+{% if  is_incremental() %}
+ and created_on >= (select max(created_on) from {{ this }})
+ {% endif %}
+
+
+ 
+--final code (mine worked) -- 28.11.22
+{{ config(
+   materialized = 'incremental',
+   tag = ['dimensions'],
+   pre_hook= 'CREATE SEQUENCE IF NOT EXISTS public.prod_key as int
+   START 1
+   INCREMENT 1
+   OWNED BY {{ this }}.in_prod_code;'
+)
+}}
+
+with source as(
+select   
+    PROD_CODE,
+    PROD_NAME,
+    PROD_DESC,
+    PROD_SUBCATEGORY,
+    PROD_SUBCATEGORY_DESC,
+    PROD_CATEGORY,
+    PROD_CATEGORY_DESC,
+    PROD_WEIGHT_CLASS,
+    PROD_UNIT_OF_MEASURE,
+    PROD_PACK_SIZE,PROD_STATUS,
+    PROD_LIST_PRICE,
+    PROD_MIN_PRICE,
+    PROD_TOTAL,
+    INSERT_DT,
+    LAST_UPDATE_DT,
+    PROD_VALID
+from  {{source('public','products')}}
+),
+
+SQ_PRODUCTS as(
+select PROD_CODE,PROD_NAME,PROD_DESC,PROD_SUBCATEGORY,PROD_SUBCATEGORY_DESC,PROD_CATEGORY,PROD_CATEGORY_DESC,PROD_WEIGHT_CLASS,
+PROD_UNIT_OF_MEASURE,PROD_PACK_SIZE,PROD_STATUS,PROD_LIST_PRICE,PROD_MIN_PRICE,PROD_TOTAL,INSERT_DT,
+LAST_UPDATE_DT,PROD_VALID from source
+),
+
+seq_prod_key as (
+    select nextval('prod_key') as next_val
+),
+
+LKP_DIM_PRODUCTS as(
+SELECT 
+nextval('prod_key') as prod_key,
+a.IN_PROD_CODE  
+from SQ_PRODUCTS a left join  {{ this }}  b
+on  b.PROD_CODE  = a.IN_PROD_CODE 
+),
+
+exptrans as(
+SELECT 
+lkp_dim_products.in_prod_code,
+current_timestamp as "systimestamp()"
+FROM LKP_DIM_PRODUCTS
+),
+rtrtrans as(
+select  L.prod_key,e.in_PROD_CODE,e."systimestamp()",s.PROD_NAME,PROD_DESC,PROD_SUBCATEGORY,PROD_SUBCATEGORY_DESC,
+PROD_CATEGORY,PROD_CATEGORY_DESC,PROD_WEIGHT_CLASS,
+PROD_UNIT_OF_MEASURE,PROD_PACK_SIZE,PROD_STATUS,PROD_LIST_PRICE,PROD_MIN_PRICE,
+PROD_TOTAL,INSERT_DT,
+LAST_UPDATE_DT,PROD_VALID FROM SQ_PRODUCTS s INNER JOIN 
+LKP_DIM_PRODUCTS L  ON  L.in_PROD_CODE = s.in_PROD_CODE
+inner join exptrans e on e.in_PROD_CODE = L.in_PROD_CODE
+)
+SELECT * FROM rtrtrans
+
+
+
+
+
+-- bala's code
+
+{{
+  config(
+    materialized='incremental',
+    unique_key = '"PRODUCT_SK"',
+    tags = ["dimensions"]
+  )
+}}
+
+with
+dimension as (
+    SELECT  p.id as "PRODUCT_ID",
+            COALESCE (p.pname, 'N/A') AS "PRODUCT_NAME",
+            p.supplier_id AS "SUPPLIER_ID",
+            COALESCE(p.price, 0.0) AS "PRODUCT_PRICE",
+            created_at AS "CREATED_AT",
+            updated_at AS "UPDATED_AT",
+            {{ dbt_utils.current_timestamp() }} as DW_CREATED_TS,
+            {{ dbt_utils.current_timestamp() }} as DW_UPDATED_TS
+    FROM {{source('public', 'products')}} p
+    {% if is_incremental() %}
+    WHERE p.updated_at > (select max("UPDATED_AT") from {{this}})
+    {% else %}
+    union all
+    SELECT  0 as "PRODUCT_ID",
+            'N/A' AS "PRODUCT_NAME",
+            0 AS "SUPPLIER_ID",
+            0 AS "PRODUCT_PRICE",
+            '1901-01-01 00:00:00' AS "CREATED_AT",
+            '1901-01-01 00:00:00' AS "UPDATED_AT",
+            {{ dbt_utils.current_timestamp() }} as DW_CREATED_TS,
+            {{ dbt_utils.current_timestamp() }} as DW_UPDATED_TS
+    {% endif %}
+)
+
+SELECT
+    {{dbt_utils.surrogate_key(
+        ['"PRODUCT_ID"']
+    )}} AS "PRODUCT_SK",
+    d."PRODUCT_ID",
+    d."PRODUCT_NAME",
+    s."SUPPLIER_SK",
+    d."PRODUCT_PRICE",
+    d."CREATED_AT",
+    d."UPDATED_AT",
+    d.DW_CREATED_TS,
+    d.DW_UPDATED_TS
+FROM dimension d inner join {{ref('d_supplier')}} s on s."SUPPLIER_ID" = d."SUPPLIER_ID"

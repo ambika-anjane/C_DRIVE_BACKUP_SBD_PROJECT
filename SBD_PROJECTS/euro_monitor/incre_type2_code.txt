@@ -1,0 +1,131 @@
+{{
+    config(
+        materialized='incremental',
+        schema = {{'target.schema'}}
+
+}}
+
+with base as (
+    select role_id,
+    created_on,
+    role_name from {{source('public','roles')}}
+    {% if  is_incremental() %}
+    where  created_on >= (select max(created_on) from {{ this }}),
+    
+ {% endif %}
+
+
+
+where 1=1
+
+{% if  is_incremental() %}
+ and created_on >= (select max(created_on) from {{ this }})
+ {% endif %}
+
+
+
+--- postgress sql (27.11.2022)
+CREATE TABLE roles(
+   role_id serial PRIMARY KEY,
+   role_name VARCHAR (255) UNIQUE NOT NULL,
+   created_on  timestamp
+);
+drop table roles
+select * from roles
+delete from roles
+insert into roles values(101,'Abhinav',now())
+insert into roles values(102,'sanjay',now())
+insert into roles values(103,'danjay',now())
+insert into roles values(104,'vijay',now())
+insert into roles values(105,'ajay',now())
+insert into roles values(106,'Rhama',now())
+
+
+select * from roles
+insert into roles values(103,'Arav',2022-11-27 22:44:21)
+insert into roles select * from roles
+WHERE cast(roles.created_on AS TIMESTAMP) <= now();
+UPDATE roles   SET created_on = '1900-01-01 00:00:00'
+WHERE created_on ~ '[ ]+';
+select current_timestamp
+select * from roles
+
+
+
+-- seed incremental
+
+{{
+    config(
+        
+        materialized='table'
+    )    
+}}
+
+with base as (
+    select role_id,
+    created_on,
+    role_name from {{ ref ('seeds/new.csv') }}
+    
+)
+   select * from base
+
+
+second level:
+
+select role_id,
+    created_on,
+    role_name from {{ref ('new')}}
+    {% if  is_incremental() %}
+    where  created_on >= (select max(created_on) from {{ this }})
+    
+ {% endif %}
+
+--increment_type3
+
+{{
+    config(
+        
+        materialized='incremental',
+        unique_key = 'role_id'
+    )    
+}}
+
+with base as (
+    select role_id,
+    created_on,
+    role_name from {{source('public','roles')}}
+    {% if  is_incremental() %}
+    where  created_on >= (select max(created_on) from {{ this }})
+    
+ {% endif %}
+)
+   select * from base
+
+
+
+increment_type 4
+vars:
+     incr_chunk_days: '90'
+
+
+{{
+    config(
+        schema = '{{target.schema}}',
+        materialized='incremental',
+        unique_key = 'role_id'
+    )    
+}}
+
+with base as (
+    select role_id,
+    created_on,
+    role_name from {{source('public','roles')}}
+    {% if  is_incremental() %}
+    where  created_on > (select max(created_on) from {{ this }})
+    {% if var('incr_chunk_days',default = false) %}
+       and created_on < select dateadd(day,{{ var("incr_chunk_days") }},max(created_on)) from {{this}})
+
+    {% endif %}       
+ {% endif %}
+)
+   select * from base

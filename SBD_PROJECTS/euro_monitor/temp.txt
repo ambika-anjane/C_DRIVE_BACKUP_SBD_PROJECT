@@ -1,36 +1,551 @@
-#srcSheet: Global-Market Size in Value
-srcSheet: Market Size in Value
-srcSheet: Market Size in Volume
- srcSheet: Channel Data
-srcSheet: Manufacturer Data
-srcSheet: Brand Data
-srcSheet: Growth Trends
-srcSheet: Sources
-srcSheet: Data Metrics - Exchange Rate
-srcSheet: Data Metrics - Exchange Rate
-srcSheet: Data Metrics - Inflation
+select * from increment_append where prod_code in
+('PROD-600','PROD-601','PROD-607','PROD-602','PROD-604','PROD-608','PROD-605','PROD-606')
+
+select * from public_stg.stg_products where prod_code in
+('PROD-604','PROD-605','PROD-606','PROD-611','PROD-610')
+
+select * from products where prod_code  = 'PROD-606'
+('PROD-604','PROD-605','PROD-606','PROD-611','PROD-610')
+
+select * FROM increment_append WHERE PROD_CODE  = 'PROD-606'
+delete from increment_append where prod_code = 'PROD-607'
+
+select * from increment_append where prod_code  IN
+('PROD-604','PROD-605','PROD-606','PROD-611','PROD-610')
+
+select * from increment_append where prod_code  IN
+
+update products set prod_code = 'PROD-610' where
+prod_code = 'PROD-604'
 
 
-srcSheet:
-     - Global-Market Size in Value
-     - Market Size in Value
-     - Market Size in Volume
-     - Channel Data
-     - Manufacturer Data
-     - Brand Data
-     - Growth Trends
-     - Sources
-     - Data Metrics - Exchange Rate
-     - Data Metrics - Inflation
+	
+
+select * from products
+select * from increment_append where prod_code in
+('PROD-600','PROD-602','PROD-603','PROD-601')
+"DELETE FROM  increment_append where prod_code not in 
+(select prod_code from products)"
+UPDATE products set prod_code = 'PROD-601' WHERE prod_code = 'PROD-600'
+
+post_hook = "DELETE FROM  increment_append where prod_code not in 
+(select prod_code from products)"
+select * from increment_append 
+select * from increment_append where prod_code in
+('PROD-601','PROD-602','PROD-603','PROD-604','PROD-605','PROD-606')
+
+select * from increment_append where prod_code in
+('PROD-601','PROD-606')
+select prod_code,count(*) from increment_append
+group by prod_code having count(*) >= 1 order by prod_code
 
 
-brandManufacturerMapping:
-  flatFileName: SI_BRAND_MANUFACTURER_MAPPING.csv
-  srcRecName: SI_BRAND_MANUFACTURER_MAPPING_LANDING
-  snowflakeConnection: brandManufacturerMappingConnection
+select * from increment_append 
+select * from increment_append where prod_code in
+('PROD-600','PROD-601','PROD-607','PROD-602','PROD-603','PROD-604','PROD-605','PROD-606')
 
-categoryMarketSize:
-  flatFileName: SI_CATEGORY_MARKET_SIZE.csv
-  srcRecName: SI_CATEGORY_MARKET_SIZE_LANDING
-  snowflakeConnection: categoryMarketSizeConnection
+select * from increment_append where prod_code in
+('PROD-607','PROD-601')
+select prod_code,count(*) from increment_append
+group by prod_code having count(*) >= 1 order by prod_code
+
+select * from public_stg.stg_products
+ 
+ select * from products
+delete from increment_append where prod_code = 'PROD-601'
+	update increment_append set prod_code = 'PROD-600' WHERE
+	prod_code = 'PROD-601'
+delete from increment_append where prod_code ='PROD-601'
+
+select * from public_stg.stg_products
+ 
+ select * from products
+delete from increment_append where prod_code = 'PROD-601'
+	update increment_append set prod_code = 'PROD-600' WHERE
+	prod_code = 'PROD-601'
+delete from increment_append where prod_code ='PROD-601'				
+
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+VALUES(101,'Robert','susane','vasavi layout','bangalore','karnataka',560058,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(102,'Manas','Keerthi','venkatagiri layout','bangalore','karnataka',560078,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(103	,'Birander','Singh','chankya layout','bangalore','karnataka',560018,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(104	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(105	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+
+INSERT INTO public_dim.dim_customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(105	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+
+INSERT INTO public_dim.dim_customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(106	,'Radha','Moahn','shivalayout','bangalore','karnata	ka',560033,'F')
+
+INSERT INTO public_dim.dim_customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(107	,'sudha','ram','shivanatglayout','bangalore','karnata	ka',560033,'F')
+
+
+-- new
+
+select * from public_dim.test
+update public_dim.test set customer_id = 105 where customer_id = 104
+drop table public_dim.test
+CREATE TABLE customer_extract 
+	   (CUSTOMER_ID NUMERIC, 
+		FIRST_NAME VARCHAR(30), 
+		LAST_NAME VARCHAR(30), 
+		ADDRESS VARCHAR(30), 
+		CITY VARCHAR(30), 
+		STATE VARCHAR(30), 
+		ZIP_CODE VARCHAR(30), 
+		MARITAL_STATUS VARCHAR(15)
+	   );
+	   
+	   
+	   
+INSERT INTO customer_extract(CUSTOMER_ID,
+FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+VALUES(101,'Robert','susane','vasavi layout','bangalore','karnataka',560058,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(102,'Manas','Keerthi','venkatagiri layout','bangalore','karnataka',560078,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(103	,'Birander','Singh','chankya layout','bangalore','karnataka',560018,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(104	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(105	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+select * from public_dim.dim_upgrade order by customer_id
+
+	
+
+pre_hook = "delete from public_dim.test where customer_id = 104",
+   post_hook= "INSERT INTO public_dim.test(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(103	,'Sachin','Matal','ganga layout','bangalore','karnataka',560074,'M')",
+   
+
+update public_dim.dim_upgrade set customer_id = '106' where customer_id = '105'
+
+
+drop table customer_extract
+CREATE TABLE customer_extract 
+	   (CUSTOMER_ID NUMERIC, 
+		FIRST_NAME VARCHAR(30), 
+		LAST_NAME VARCHAR(30), 
+		ADDRESS VARCHAR(30), 
+		CITY VARCHAR(30), 
+		STATE VARCHAR(30), 
+		ZIP_CODE VARCHAR(30), 
+		MARITAL_STATUS VARCHAR(15)
+	   );
+
+select * from customer_extract
+
+select * from public_stg.stg_customer_extract
+select * from public_dim.dim_customer_extract_1 order by pm_primarykey
+
+
+upd_update_insert_dim_cus_ext as(
+    select
+        "prev_customer_id",
+        "first_name",
+        "last_name",
+        "address",
+        "city",
+        "state",
+        "zip_code",
+        "marital_status",
+        "changed_flag",
+        "New_Flag"
+        from rtr_decide_update_insert_old_new_records
+       
+),
+
+
+dim_cust_ext as(
+       
+       {% if is_incremental() %}
+        select 
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat("prev_customer_id","first_name") as "md5_checksum",
+        'U' AS "cdc_flag",
+        'I' as "cdc_flag"
+        from  
+        upd_update_insert_dim_cus_ext
+        {% endif %} 
+
+)
+
+select * from dim_cust_ext
+
+lkp_customers (correct code)
+{{ config(
+   materialized = 'incremental',
+   tag = ['dimension'],
+   unique_key = 'promo_code',
+   pre_hook= 'create sequence if not exists public.pm_primarykey as int
+   start 1
+   increment 1;'
+)
+}}
+
+with source as(
+select  distinct
+    "customer_id",
+    "first_name",
+    "last_name",
+    "address",
+    "city",
+    "state",
+    "zip_code",
+    "marital_status"
+from  {{ref('stg_customer_extract')}}
+),
+
+sq_customer_extract as(
+select  distinct
+    "customer_id",
+    "first_name",
+    "last_name",
+    "address",
+    "city",
+    "state",
+    "zip_code",
+    "marital_status"
+    from source
+),
+
+{% if is_incremental() %}
+lkp_customers as(
+    select 0 as "pm_primarykey",
+           '-' as "customer_id"
+    union
+    select 
+     d."pm_primarykey",
+     d."customer_id",
+     d."first_name",
+     d."last_name",
+     d."address",
+     d."city",
+     d."state",
+     d."zip_code",
+     d."marital_status"
+     from {{ this }} d
+
+),
+RTR_Decide_Update as(
+    select
+    d."pm_primarykey",
+    s."customer_id",
+    s."first_name",
+    s."last_name",
+    s."address",
+    s."city",
+    s."state",
+    s."zip_code",
+    s."marital_status"
+    from sq_customer_extract s left join 
+    lkp_customers d  
+    on  d."customer_id" = s."customer_id"
+    where d."pm_primarykey" is not null
+),
+{% endif %}
+
+RTR_Decide_Insert as(
+select  distinct
+    s."customer_id",
+    s."first_name",
+    s."last_name",
+    s."address",
+    s."city",
+    s."state",
+    s."zip_code",
+    s."marital_status"
+    from sq_customer_extract s 
+    {% if is_incremental() %}
+    left outer join lkp_customers l
+    on l."customer_id" = s."customer_id"
+    where l."pm_primarykey" is null
+    {% endif %}
+   
+),
+
+upd_insert_dim_cus_ext as(
+    select
+       -- "systemdate",
+         nextval('pm_primarykey') as "pm_primarykey",
+        "customer_id",
+        "first_name",
+        "last_name",
+        "address",
+        "city",
+        "state",
+        "zip_code",
+        "marital_status"
+        from RTR_Decide_Insert 
+),
+
+
+{% if is_incremental() %}
+upd_update_dim_cus_ext as(
+    select
+       -- "systemdate",
+        "customer_id",
+        "first_name",
+        "last_name",
+        "address",
+        "city",
+        "state",
+        "zip_code",
+        "marital_status"
+        from RTR_Decide_Update 
+),
+{% endif %}
+
+dim_cust_ext as(
+        select
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat("pm_primarykey","customer_id") as "md5_checksum",
+        'I' as "cdc_flag"
+        from  
+        upd_insert_dim_cus_ext 
+       {% if is_incremental() %}
+        union all
+        select 
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat(promo_key,promo_code) as "md5_checksum",
+        'U' AS "cdc_flag"
+        from  
+        upd_update_dim_promotions
+        {% endif %} 
+
+)
+select * from dim_cust_ext
+
+
+
+    select
+    e."pm_primarykey" as "prev_pm_primarykey",
+    s."customer_id",
+    s."first_name",
+    s."last_name",
+    s."address",
+    s."city",
+    s."state",
+    s."zip_code"
+    from sq_customer_extract s 
+    {% if is_incremental() %}
+    left outer join exp_DetectChanges e
+    on e."customer_id" = s."customer_id"
+    where e."pm_primarykey" is null
+    {% endif %}
+
+
+
+
+
+
+temp (deleet 1)
+
+
+RTR_Decide_Update_new_records as(
+
+  select
+     s."customer_id",
+     s."first_name",
+     s."last_name",
+     s."address",
+     s."city",
+     s."state",
+     s."zip_code",
+     s."marital_status"
+     
+     from 
+     source s  
+     where s."customer_id" is not null
+     
+)
+{% endif %},
+
+
+RTR_Decide_insert_new_records as(
+
+  select
+    
+     s."first_name",
+     s."last_name",
+     s."address",
+     s."city",
+     s."state",
+     s."zip_code",
+     s."marital_status"
+     
+     from 
+     source 
+     {% if is_incremental() %}
+     left join RTR_Decide_Update_new_records s
+     on  s."customer_id" is  null
+     {% endif %}
+     
+)
+
+-- now
+
+
+update public_dim.dim_customer_extract_1 set prev_customer_id = '108' where prev_customer_id = '107'
+select * from public_dim.test
+select * from public_dim.dim_customer_extract order by prev_customer_id
+INSERT INTO customer_extract(CUSTOMER_ID,
+FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+VALUES(101,'Robert','susane','vasavi layout','bangalore','karnataka',560058,'M')
+select * from  public_dim.dim_upgrade
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(102,'Manas','Keerthi','venkatagiri layout','bangalore','karnataka',560078,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(103	,'Birander','Singh','chankya layout','bangalore','karnataka',560018,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(104	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+INSERT INTO customer_extract(CUSTOMER_ID,
+		FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+		VALUES(105	,'Surrendra','Matal','shivaganga layout','bangalore','karnataka',560023,'M')
+
+INSERT INTO customer_extract(CUSTOMER_ID,
+FIRST_NAME,LAST_NAME,ADDRESS,CITY,STATE,ZIP_CODE,MARITAL_STATUS)
+VALUES(108,'Robert','susane','vasavi layout','bangalore','karnataka',560058,'M')
+
+select * from customer_extract
+
+ {% if is_incremental() %}
+     where l."customer_id" is  not null
+     {% endif %}
+
+{% if is_incremental() %}
+     where e."customer_id" is   null
+     {% endif %}
+
+     COALESCE(l."customer_id",'Not Empty') as "changed_flag",
+     COALESCE(l."customer_id",'Empty','changed_flag') as "New_Flag"
+
+
+temp (delte)
+
+RTR_Decide_Update as(
+    select
+    "pm_primarykey",
+    "customer_id",
+    "first_name",
+    "last_name",
+    "address",
+    "city",
+    "state",
+    "zip_code",
+    "marital_status"
+    from  
+    exp_DetectChanges e 
+    where e."pm_primarykey" is not null
+),
+{% endif %}
+
+RTR_Decide_Insert as(
+select  distinct
+    "pm_primarykey" as "prev_primary_key",
+    "customer_id",
+    "first_name",
+    "last_name",
+    "address",
+    "city",
+    "state",
+    "zip_code",
+    "marital_status"
+    from  
+    exp_DetectChanges e 
+    where e."pm_primarykey" is not null
+   
+),
+
+upd_insert_dim_cus_ext as(
+    select
+       -- "systemdate",
+         nextval('pm_primarykey') as "pm_primarykey",
+        "customer_id",
+        "first_name",
+        "last_name",
+        "address",
+        "city",
+        "state",
+        "zip_code",
+        "marital_status"
+        from RTR_Decide_Insert 
+),
+
+
+{% if is_incremental() %}
+upd_update_dim_cus_ext as(
+    select
+       -- "systemdate",
+        "customer_id",
+        "first_name",
+        "last_name",
+        "address",
+        "city",
+        "state",
+        "zip_code",
+        "marital_status"
+        from RTR_Decide_Update 
+),
+{% endif %}
+
+dim_cust_ext as(
+        select
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat("pm_primarykey","customer_id") as "md5_checksum",
+        'I' as "cdc_flag"
+        from  
+        upd_insert_dim_cus_ext 
+       {% if is_incremental() %}
+        union all
+        select 
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat(promo_key,promo_code) as "md5_checksum",
+        'U' AS "cdc_flag"
+        from  
+        upd_update_dim_promotions
+        {% endif %} 
+
+)
 

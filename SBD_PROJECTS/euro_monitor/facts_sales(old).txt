@@ -1,0 +1,202 @@
+facts_sales_code
+
+{{ config(
+   materialized = 'incremental',
+   tag = ['facts'],
+   pre_hook= 'create sequence if not exists order_number as int
+   start 1
+   increment 1;'
+)
+}}
+
+with source as(
+select   
+    order_number,
+    prod_code,
+    cust_code,
+    sale_date,
+    channel_code,
+    promo_code,
+    quantity_sold,
+    amount_sold,
+    insert_dt,
+    last_update_dt
+    
+from  {{source('public','sales')}}
+),
+
+sq_sales as(
+select 
+order_number,
+prod_code,
+cust_code,
+sale_date,
+channel_code,
+promo_code,
+quantity_sold,
+amount_sold,
+insert_dt,
+last_update_dt
+from  source
+),
+
+
+lkp_dim_products as(
+    select  
+    d.prod_key,
+    d.prod_code,
+    s.prod_code as in_prod_code
+    from {{source('public_dim','dim_products')}}  d
+    left outer join sq_sales s on s.prod_code = d.prod_code
+    where d.prod_code = s.prod_code
+    
+),
+lkp_dim_cus as(
+    select
+    d.cust_key,
+    d.cust_code,
+    s.cust_code as in_cust_code
+    from {{source('public_dim','dim_customer')}}  d
+    left outer join sq_sales s  on s.cust_code = d.cust_code
+    where s.cust_code = d.cust_code
+   
+),
+lkp_dim_promo as(
+    select
+    d.promo_key,
+    d.promo_code,
+    s.promo_code as in_promo_code
+    from {{source('public_dim','dim_promo')}}  d
+    left outer join sq_sales s on s.promo_code = d.promo_code
+    where s.promo_code = d.promo_code
+   
+),
+lkp_dim_channel as(
+    select
+    d.channel_key,
+    d.channel_code,
+    s.channel_code as in_channel_code
+    from {{source('public_dim','dim_channel')}}  d
+   left outer join sq_sales s 
+    on s.channel_code = d.channel_code
+    where s.channel_code = d.channel_code
+    
+),
+lkp_fact_sales as(
+    select 0 as sale_date_time_key,
+           '-' as order_number
+    {% if is_incremental() %}
+    union
+    select  
+    d.order_number,
+    s.order_number 
+    from sq_sales s  
+    left outer join {{this}} d on s.in_order_number = d.order_number
+    where d.order_number = s.in_order_number
+    {% endif %}
+
+),
+
+
+rtr_update_update_fact_sales as(
+    select
+       -- "systemdate",
+        sa.order_number as lkp_order_number,
+        s.order_number as src_order_number,
+        p.prod_key,
+        ch.channel_key,
+        cu.cust_key,
+        pr.promo_key,
+        s.quantity_sold,
+        s.amount_sold,
+        s.insert_dt,
+        s.last_update_dt
+        from sq_sales s left join lkp_dim_products p
+        on p.prod_code = s.prod_code left join lkp_dim_cus cu
+        on cu.cust_code = s.cust_code left join lkp_dim_promo pr
+        on pr.promo_code = s.promo_code left join lkp_dim_channel ch
+        on ch.channel_code = s.channel_code left join lkp_fact_sales sa
+        on sa.order_number = s.order_number
+        where sa.order_number is not null
+
+),
+
+update_strategy_insert as(
+select  
+        nextval('order_number') as sale_date_time_key,
+        src_order_number,
+        prod_key,
+        channel_key,
+        cust_key,
+        promo_key,
+        quantity_sold,
+        amount_sold,
+        insert_dt,
+        last_update_dt
+        from rtr_update_insert_fact_sales
+),
+
+
+update_strategy_update as(
+    select 
+        nextval('order_number') as sale_date_time_key,
+        lkp_order_number,
+        prod_key,
+        channel_key,
+        cust_key,
+        promo_key,
+        quantity_sold,
+        amount_sold,
+        insert_dt,
+        last_update_dt
+        from rtr_update_update_fact_sales
+),
+
+
+fact_sales as(
+        select 
+        *,
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat(src_order_number,prod_key) as "md5_checksum",
+        case when src_order_number is null then 'insert'
+        end as "cdc_flag"
+        from  
+        update_strategy_insert 
+        union all 
+        select 
+        *,
+        -- sale_date_time_key
+        current_timestamp as "dw_insert_dt",
+        current_timestamp as "dw_update_dt",
+        concat(lkp_order_number,prod_key) as "md5_checksum",
+        case when lkp_order_number is not null then 'update'
+        end as "cdc_flag"
+        from  
+        update_strategy_update 
+)
+
+
+
+
+select * from fact_sales
+
+
+
+source
+
+version: 2
+sources:
+  
+  - name: public_dim
+    tables: 
+      - name: 'dim_customer'
+      - name: 'dim_channel'
+      - name: 'dim_products'
+      - name: 'dim_promo'
+      - name: 'dim_countries'
+      
+      
+    
+      
+      
