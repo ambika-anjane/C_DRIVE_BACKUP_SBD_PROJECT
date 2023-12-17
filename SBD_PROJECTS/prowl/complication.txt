@@ -1,0 +1,12 @@
+1. Complications in Numerator phase 2 (total_outdoor table)
+a. input file (more than one sheet ) so..python code sheet= none didnt work)
+b. extra column in the input file (so the headers to replace)
+3. that extra column not in the SF (so need to recheck)
+4. because o thet extra column and headerline(1 QE) was not able to read
+5. solution: need to delete extra sheets , remove extra column , headers adjuectment and checking for the data in SF with required columns
+
+2. Complaication im prowl data:
+1. alexa column with (float and string)
+2. so need to convert the column (into muliples of 100)
+3. extra column was provided BRAND in US..
+4. so need to redo with the code to set ALEXA column and removing the extra column in SF (to match with input file and BRD)

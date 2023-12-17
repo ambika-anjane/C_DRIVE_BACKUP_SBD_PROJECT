@@ -1,0 +1,532 @@
+meteoLatLongData:
+   excelFileName: latlongbycityus.xlsx
+   srcRecName: METEO_LAT_LONG_CITY_BY_US
+   snowflakeConnection: meteoLatLongConnection
+
+
+mpmExtract:
+   excelFileName: MPM.xlsx
+   srcRecName: MPM_EXTRACT_NUMERATOR
+   snowflakeConnection: mpmExtractConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber: 5
+   sheet3ColumnNumber: 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - QUARTERLY_SCORECARD_STORES
+    - BRAND
+
+
+handToolsAndOPESBDMarketShareQuarterly:
+   excelFileName: Hand_Tools_and_OPE_SBD_Market_Share_Quarterly.xlsx
+   srcRecName: Hand_Tools and OPE_SBD_Market_Share_Quarterly
+   snowflakeConnection: handToolsAndOPESBDMarketShareQuarterlyConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - BRAND
+
+powerToolsAndPTASBDMarketShareQuarterly:
+   excelFileName: Power_Tools_and_PTA_SBD_Market_Share_Quarterly.xlsx
+   srcRecName: Power_Tools_and_PTA_SBD_Market_Share_Quarterly
+   snowflakeConnection: powerToolsAndPTASBDMarketShareQuarterlyConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - BRAND
+
+shopperMetricHandToolsAndOPE:
+   excelFileName: Shopper_Metric_Hand_Tools_and_OPE.xlsx
+   srcRecName: Shopper_Metric_Hand_Tools_and_OPE
+   snowflakeConnection: shopperMetricHandToolsAndOPEConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 3
+   sheet3ColumnNumber : 3
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+
+shopperMetricPowerToolsAndPTA:
+   excelFileName: Shopper_Metric_Power_Tools_and_PTA.xlsx
+   srcRecName: Shopper_Metric_Power_Tools_and_PTA
+   snowflakeConnection: shopperMetricPowerToolsAndPTAConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 3
+   sheet3ColumnNumber : 3
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+
+DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Granular:
+   excelFileName: DF1_Region_split_on_Subcategory_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Granular.xlsx
+   srcRecName: DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Granular
+   snowflakeConnection: DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_GranularConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - CENSUS_REGION
+
+
+DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_Subcategory_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - RETAILER
+
+DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - RETAILER
+
+DF1_Region_split_on_Category_of_Power_Tools_PTA:
+   excelFileName: DF1_Region_split_on_Category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Region_split_on_Category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Region_split_on_Category_of_Power_Tools_PTAConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - CENSUS_REGION
+
+
+
+DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - RETAILER
+
+
+
+DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - RETAILER
+
+
+DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Region_split_on_overall_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CENSUS_REGION
+
+
+DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_overall_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - RETAILER
+
+DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - RETAILER
+
+globalMarketSizeInValue:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Global-Market Size in Value
+   srcRecName: GLOBAL_MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: globalMarketSizeInValueConnection
+   requiredColumns:
+    - REGION
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+marketSizeInValue:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Market Size in Value
+   srcRecName: MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: marketSizeInValueConnection
+   requiredColumns:
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - MARKET_SHARE_PERCENTAGE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+marketSizeInVolume:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Market Size in Volume
+   srcRecName: MARKET_SIZEIN_VOLUME_LANDING
+   snowflakeConnection: marketSizeInVolumeConnection
+   requiredColumns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - POWERSOURCE_TYPE
+    - UNITS
+    - YEAR
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+channelDataConnection:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Channel Data
+  srcRecName: CHANNEL_DATA_LANDING
+  snowflakeConnection: channelDataConnection
+  requiredColumns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - RETAIL_NONRETAIL
+    - CHANNEL
+    - OFFLINE_ONLINE
+    - YEAR
+    - MARKET_SHARE_PERCENTAGE
+    - MARKET_SIZE_UNIT
+    - MARKET_SIZE
+    - GROWTH_PERCENTAGE_FROM_PREVIOUSYEAR
+
+manufacturerData:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Manufacturer Data
+  srcRecName: MANUFACTURER_DATA_LANDING
+  snowflakeConnection: manufacturerDataConnection
+  requiredColumns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - UNITS
+    - YEAR
+    - RANKING
+    - MANUFACTURER_NAME
+    - MANUFACTURER_SHARE
+    - MANUFACTURER_VALUE
+
+brandData:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Brand Data
+  srcRecName: BRAND_DATA_LANDING
+  snowflakeConnection: brandDataConnection
+  requiredColumns:
+    - COUNTRY
+    - CATEGORY
+    - SUBCATEGORY
+    - UNITS
+    - YEAR
+    - RANKING
+    - BRAND_OWNER
+    - BRAND_NAME
+    - BRAND_SHARE
+    - BRAND_VALUE
+
+growthTrends:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Growth Trends
+  srcRecName: GROWTH_TRENDS_LANDING
+  snowflakeConnection: growthTrendsConnection
+  requiredColumns:
+    - COUNTRY
+    - DESCRIPTION
+
+euroSources:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Sources
+  srcRecName: SOURCES_LANDING
+  snowflakeConnection: euroSourcesConnection
+  requiredColumns:
+    - COUNTRY
+    - DESCRIPTION
+    - URL_LINK
+    - TYPE_OF_SOURCE
+
+
+dataMetricsExchangeRate:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Data Metrics - Exchange Rate
+  srcRecName: DATA_METRICS_EXCHANGERATE_LANDING
+  snowflakeConnection: dataMetricsExchangeRateConnection
+  requiredColumns:
+    - COUNTRY
+    - LOCAL_CURRENCY
+    - LOCAL_CURRENCY_FOR_UNIT_USD
+    - USD_UNIT_FOR_LOCAL_CURRENCY
+
+
+dataMetricsInflation:
+  excelFileName: euromonitor_excel.xlsx
+  srcSheet: Data Metrics - Inflation
+  srcRecName: DATA_METRICS_INFLATION_LANDING
+  snowflakeConnection: dataMetricsInflationConnection
+  requiredColumns:
+    - COUNTRY
+    - UNIT
+    - YEAR
+
+htasBrandShare:
+   excelFileName: htas_brand_share.xlsx
+   srcRecName: HTAS_BRAND_SHARE_LANDING
+   snowflakeConnection: htasBrandShareConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - RETAILER
+    - BRAND
+
+outdoorBrandShare:
+   excelFileName: outdoor_brand_share.xlsx
+   srcRecName: OUTDOOR_BRAND_SHARE_LANDING
+   snowflakeConnection: outdoorBrandShareConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - RETAILER
+    - BRAND
+
+powerTools:
+   excelFileName: power_tools.xlsx
+   srcRecName: POWER_TOOLS_BRAND_SHARE_LANDING
+   snowflakeConnection: powerToolsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - RETAILER
+    - BRAND
+
+quartelyBrandAtms:
+   excelFileName: quartely_brand.xlsx
+   srcRecName: QUARTERLY_BRAND_ATMSC_LANDING
+   snowflakeConnection: quartelyBrandAtmsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - SBD_QUARTERLY_SCORECARD_STORES
+    - BRAND
+
+r12BrandAtms:
+   excelFileName: R12_Brand.xlsx
+   srcRecName: ROLLING_TWELVE_LANDING
+   snowflakeConnection: r12BrandAtmsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - SBD_QUARTERLY_SCORECARD_STORES
+    - BRAND
+
+urlListCanada:
+   excelFileName: url_list_canada.xlsx
+   srcRecName: PROWL_FULL_URL_LIST_CANADA_LANDING
+   srcSheet: URL List
+   snowflakeConnection: urlListCanadaConnection
+   requiredColumns:
+    - MAPP_POLICY
+    - SKU_DESCRIPTION
+    - SKU_URL
+    - SKU
+    - SELLER
+    - STATUS
+    - ALEXA
+    - RATINGS
+    - MAP
+    - PRICE
+    - URL_FEATURES
+    - AVAIL
+    - REPORTS
+    - TOTAL_CHANGES
+    - DAYS
+    - URL
+    - CURRENCY
+    - WEEK_ID
+    
+
+urlListUs:
+   excelFileName: url_list_USA.xlsx
+   srcRecName: PROWL_FULL_URL_LIST_US_LANDING
+   srcSheet: URL List
+   snowflakeConnection: urlListUsConnection
+   requiredColumns:
+    - BRAND
+    - SKU_DESCRIPTION_IN_THE_NEW_DATASET
+    - SKU_URL_IN_THE_NEW_DATASET
+    - SKU
+    - SELLER
+    - STATUS
+    - ALEXA
+    - RATINGS
+    - MAP
+    - PRICE
+    - URL_FEATURES
+    - AVAIL
+    - REPORTS
+    - TOTAL_CHANGES
+    - DAYS
+    - URL
+    - CURRENCY
+    - WEEK_ID
+
+urlListUs1:
+   excelFileName: url_list_USA1.xlsx
+   srcRecName: PROWL_FULL_URL_LIST_US_LANDING
+   srcSheet: URL List 
+   snowflakeConnection: urlListUsConnection
+   requiredColumns:
+    - BRAND
+    - SKU_DESCRIPTION_IN_THE_NEW_DATASET
+    - SKU_URL_IN_THE_NEW_DATASET
+    - SKU
+    - SELLER
+    - STATUS
+    - ALEXA
+    - RATINGS
+    - MAP
+    - PRICE
+    - URL_FEATURES
+    - AVAIL
+    - REPORTS
+    - TOTAL_CHANGES
+    - DAYS
+    - URL
+    - CURRENCY
+    - WEEK_ID
+
+
+
+   
