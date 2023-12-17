@@ -1,0 +1,274 @@
+WITH DEDUPE_SRC_AMZ_US as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','AMAZON_US_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_AMZ_CA as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','AMAZON_CA_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_LS_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','LOWES_PRICING')}}
+), DEDUPE_SRC_HD_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY SKU, MODELNUMBER, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','HOMEDEPOT_PRICING')}}
+), DEDUPE_SRC_HD_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','HOMEDEPOT_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_LS_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','LOWES_COMPR_PRODUCTS')}}
+)
+SELECT DISTINCT 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    COASLESCE(NULLIF(ITEMMODELNUMBER, ''), {{var('default_mapkey')}}
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+
+    WASPRICE as PROD_LIST_PRC,
+    'Amazon US' AS SELLER_NAME,
+    COASLESCE(NULLIF(ITEMDESCRIPTION, '') as SBD_PROD_DESC,
+    'Amazon US' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    NVL(PRICESALE,0) as TOT_PRC,
+    NVL(PRICESALE,0) as TOT_USD_PRC,
+    NVL(PRICESALE,0) as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_AMZ_US
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+    WASPRICE as PROD_LIST_PRC,
+    'Amazon CA' AS SELLER_NAME,
+    COASLESCE(NULLIF(ITEMDESCRIPTION, '') as SBD_PROD_DESC,
+    'Amazon CA' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    NVL(PRICESALE,0) as TOT_PRC,
+    NVL(PRICESALE,0) as TOT_USD_PRC,
+    NVL(PRICESALE,0) as SBD_SELL_PRC,
+    'CA' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_AMZ_CA
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(SKU::VARCHAR,''),'~',COALESCE(MODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(SKU::VARCHAR,''),'~',COALESCE(MODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    COASLESCE(NULLIF(ITEMMODELNUMBER, ''), {{var('default_mapkey')}}
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+
+    NVL(WASPRICE, 0) as PROD_LIST_PRC,
+    'HomeDepot' AS SELLER_NAME,
+    'HomeDepot' AS ONLINE_SELLER_NAME,
+     SKU as ONLINE_PROD_CD,
+     ITEMURL AS URL,
+     TOPCATEGORY AS CTGY_NAME,
+     NVL(PRICE, 0) as TOT_PRC,
+     NVL(PRICE, 0) as TOT_USD_PRC,
+     NVL(PRICE, 0) AS SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_HD_PRC
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(SKU::VARCHAR,''),'~',COALESCE(MODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(SKU::VARCHAR,''),'~',COALESCE(MODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+        case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+
+    NVL(WASPRICE, 0) as PROD_LIST_PRC,
+    'Lowes' AS SELLER_NAME,
+    'Lowes' AS ONLINE_SELLER_NAME,
+    SKU as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    TOPCATEGORY AS CTGY_NAME,
+    NVL(PRICE, 0) as TOT_PRC,
+    NVL(PRICE, 0) as TOT_USD_PRC,
+    NVL(PRICE, 0) as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_LS_PRC
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+        case when length(trim(SKU)) <1 then {{var('default_mapkey')}}
+         when SKU IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+
+    NVL(WASPRICE, 0) as PROD_LIST_PRC,
+    'HomeDepot' AS SELLER_NAME,
+    'HomeDepot' AS ONLINE_SELLER_NAME,
+     SKU as ONLINE_PROD_CD,
+     ITEMURL AS URL,
+     TOPCATEGORY AS CTGY_NAME,
+     NVL(PRICE, 0) as TOT_PRC,
+     NVL(PRICE, 0) as TOT_USD_PRC,
+     NVL(PRICE, 0) AS SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+ 
+FROM DEDUPE_SRC_HD_COMPR
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    LOADDTS AS       {{var('column_vereffdte')}},
+    LOADDTS AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    LOADDTS AS       {{var('column_z3loddtm')}},
+    EVENTDTS AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+        case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+         when STORESKU IS NULL then {{var('default_mapkey')}} 
+    else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR,     
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}}
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    COASLESCE(NULLIF(ITEMBRAND, ''), {{var('default_mapkey')}}
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+
+    NVL(WASPRICE, 0) as PROD_LIST_PRC,
+    'Lowes' AS SELLER_NAME,
+    'Lowes' AS ONLINE_SELLER_NAME,
+     STORESKU as ONLINE_PROD_CD,
+     ITEMURL AS URL,
+     TOPCATEGORY AS CTGY_NAME,
+     NVL(PRICE, 0) as TOT_PRC,
+     NVL(PRICE, 0) as TOT_USD_PRC,
+     NVL(PRICE, 0) AS SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_LS_COMPR
+WHERE ROW_NO = 1

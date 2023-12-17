@@ -1,0 +1,464 @@
+WITH DEDUPE_SRC_US as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','AMAZON_US_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_CA as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMMODELNUMBER, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','AMAZON_CA_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_LS_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY   ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY   ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','LOWES_PRICING')}}
+), DEDUPE_SRC_HD_PRC as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY   ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY   ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','HOMEDEPOT_PRICING')}}
+), DEDUPE_SRC_HD_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','HOMEDEPOT_COMPR_PRODUCTS')}}
+), DEDUPE_SRC_LS_COMPR as (
+    SELECT *,
+           ROW_NUMBER() OVER(PARTITION BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE
+                             ORDER BY INTERNETNR, MODELNR, ITEMBRAND, ITEMURL, RUNDATE, ROW_SQN DESC) AS ROW_NO
+    FROM {{source('SEQUENTUM','LOWES_COMPR_PRODUCTS')}}
+)
+SELECT DISTINCT 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} else MODELNR end as PROD_KEY, 
+--     case when length(trim(ITEMMODELNUMBER)) <1 then {{var('default_mapkey')}}
+--          when ITEMMODELNUMBER IS NULL then {{var('default_mapkey')}} else ITEMMODELNUMBER end as PROD_EAN, 
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as PROD_BASE_PRC,
+   WASPRICE as PROD_LIST_PRC,
+--    WASPRICE as PROD_LIST_PRC_USD,
+    'Amazon US' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'Amazon US' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    PRICESALE as TOT_PRC,
+    PRICESALE as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_US
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMMODELNUMBER::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} else MODELNR end as PROD_KEY, 
+--     case when length(trim(ITEMMODELNUMBER)) <1 then {{var('default_mapkey')}}
+--          when ITEMMODELNUMBER IS NULL then {{var('default_mapkey')}} else ITEMMODELNUMBER end as PROD_EAN, 
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as PROD_BASE_PRC,
+   WASPRICE as PROD_LIST_PRC,
+--    0 as PROD_LIST_PRC_USD,
+    'Amazon CA' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'Amazon CA' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    PRICESALE as TOT_PRC,
+    0 as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'CA' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_CA
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNUMBER)) <1 then {{var('default_mapkey')}}
+         when MODELNUMBER IS NULL then {{var('default_mapkey')}} else MODELNUMBER end as PROD_KEY, 
+--     case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+--          when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_EAN, 
+          
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as PROD_BASE_PRC,
+   NVL(WASPRICE, 0) as PROD_LIST_PRC,
+--    NVL(WASPRICE, 0) as PROD_LIST_PRC_USD,
+    'HomeDepot' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'HomeDepot' AS ONLINE_SELLER_NAME,
+    SKU as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    TOPCATEGORY AS CTGY_NAME,
+    NVL(PRICE, 0) as TOT_PRC,
+    NVL(PRICE, 0) as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_HD_PRC
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(MODELNUMBER)) <1 then {{var('default_mapkey')}}
+         when MODELNUMBER IS NULL then {{var('default_mapkey')}} else MODELNUMBER end as PROD_KEY, 
+--     case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+--          when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_EAN, 
+    
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as PROD_BASE_PRC,
+   NVL(WASPRICE, 0) as PROD_LIST_PRC,
+--    NVL(WASPRICE, 0) as PROD_LIST_PRC_USD,
+    'Lowes' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'Lowes' AS ONLINE_SELLER_NAME,
+    SKU as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    TOPCATEGORY AS CTGY_NAME,
+    NVL(PRICE, 0) as TOT_PRC,
+    NVL(PRICE, 0) as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_LS_PRC
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+         when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_KEY, 
+--     case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+--          when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_EAN, 
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as PROD_BASE_PRC,
+   NVL(WASPRICE, 0) as PROD_LIST_PRC,
+--    NVL(WASPRICE, 0) as PROD_LIST_PRC_USD,
+    'HomeDepot' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'HomeDepot' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    NVL(PRICESALE, 0) as TOT_PRC,
+    NVL(PRICESALE, 0) as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_HD_COMPR
+WHERE ROW_NO = 1
+UNION ALL
+SELECT distinct 'SEQUENTUM' AS {{var('column_srcsyskey')}},
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+    RUNDATE AS       {{var('column_vereffdte')}},
+    RUNDATE AS       {{var('column_SRC_RCRD_UPD_DTE')}},
+    RUNDATE AS       {{var('column_z3loddtm')}},
+    RUNDATE AS      {{var('column_SRC_RCRD_CREATE_DTE')}},
+    To_date('9999.12.31', 'YYYY.MM.DD') AS {{var('column_verexpirydt')}},
+    {{var('default_y')}} as {{var('column_currrecflag')}},
+    {{var('default_n')}} as {{var('column_orprecflag')}},
+    {{var('default_n')}} as {{var('column_DEL_FROM_SRC_FLAG')}},
+    '{{model.name}}'  AS {{var('column_ETL_INS_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_INS_DTE')}},
+    '{{model.name}}'   AS {{var('column_ETL_UPD_PID')}},
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ  AS {{var('column_ETL_UPD_DTE')}},
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+    case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+         when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_KEY, 
+--     case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+--          when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_EAN, 
+    case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+    case when length(trim(ITEMDESCRIPTION)) <1 then {{var('default_mapkey')}}
+         when ITEMDESCRIPTION IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN ITEMDESCRIPTION
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_DESC, 
+    Case when length(trim(CURRENCY)) <1 then {{var('default_mapkey')}}
+         when CURRENCY IS NULL then {{var('default_mapkey')}} else CURRENCY end aS CRNCY_KEY, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}} else ITEMBRAND end aS BRAND_NAME, 
+    Case when length(trim(ITEMBRAND)) <1 then {{var('default_mapkey')}}
+         when ITEMBRAND IS NULL then {{var('default_mapkey')}}
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then ITEMBRAND
+              else {{var('default_mapkey')}} end AS COMPTTR_BRAND_LKEY, 
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as PROD_BASE_PRC,
+   NVL(WASPRICE, 0) as PROD_LIST_PRC,
+--    NVL(WASPRICE, 0) as PROD_LIST_PRC_USD,
+    'Lowes' AS SELLER_NAME,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then ITEMDESCRIPTION
+              else {{var('default_key')}}  end  as SBD_PROD_DESC,
+    'Lowes' AS ONLINE_SELLER_NAME,
+    INTERNETNR as ONLINE_PROD_CD,
+    ITEMURL AS URL,
+    ITEMCATEGORY AS CTGY_NAME,
+    NVL(PRICESALE, 0) as TOT_PRC,
+    NVL(PRICESALE, 0) as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as SBD_SELL_PRC,
+    'US' AS COUNTRY_ISO_CODE 
+FROM DEDUPE_SRC_LS_COMPR
+WHERE ROW_NO = 1

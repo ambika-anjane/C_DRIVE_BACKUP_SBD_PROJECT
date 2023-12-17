@@ -1,0 +1,80 @@
+LINE NO : 198 (strosku) not in lowes and home depot 
+it is rather modelnumber for prod_key
+
+line no (200 to 204): (RIGHT NOE I HAVE REMOVED IT)
+case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+
+line no : 221 to 232
+pricesale not in home depot and lowes pricing ( it is price)
+Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_PRC,
+    Case when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as COMPTTR_PROD_BASE_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICESALE,0)
+              else 0 end  as PROD_BASE_PRC,
+
+
+LINE NO : 236 (SKU as ONLINE_PROD_CD,) IT WAS INTERNETNR
+LINE NO: 238 (TOPCATEGORY AS CTGY_NAME) IT WAS ITEMCATEGORY
+line no: 243 (TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)) it was pricesale
+line no : 239 and 240 
+NVL(PRICESALE, 0) as TOT_PRC,
+    NVL(PRICESALE, 0) as TOT_USD_PRC, (changed as price)
+line no: 250 (internr and modelnr) removed
+    md5(CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')))  AS  {{var('column_rechashkey')}},
+
+line nO : 263 
+    CONCAT(COALESCE(INTERNETNR::VARCHAR,''),'~',COALESCE(MODELNR::VARCHAR,''),'~',COALESCE(ITEMBRAND::VARCHAR,''),'~',COALESCE(ITEMURL::VARCHAR,''),'~',COALESCE(RUNDATE::VARCHAR,'')) AS PRC_COMPTTR_SLS_KEY,
+
+line no: 264 and 265
+case when length(trim(STORESKU)) <1 then {{var('default_mapkey')}}
+         when STORESKU IS NULL then {{var('default_mapkey')}} else STORESKU end as PROD_KEY, 
+replaced storesku as modelnumber 
+
+line no : 268 to 273 
+case when length(trim(MODELNR)) <1 then {{var('default_mapkey')}}
+         when MODELNR IS NULL then {{var('default_mapkey')}} 
+         when TRIM(UPPER(itembrand)) NOT LIKE '%STANLEY%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%DEWALT%' AND
+              TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' THEN MODELNR
+         else {{var('default_mapkey')}} end as COMPTTR_PROD_NBR, 
+removed
+
+line no : 291,287,295 (TRIM(UPPER(itembrand)) NOT LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)) pricesale replaced by price
+line no: 305 (    INTERNETNR as ONLINE_PROD_CD) replaced by sku
+LINE NO: 307 (TOPATEGORY AS CTGY_NAME,) IT WAS ITEMCATEGORY
+LINE NO: 308 TO 312 ( NVL(PRICE, 0) as TOT_PRC,
+    NVL(PRICE, 0) as TOT_USD_PRC,
+    Case when TRIM(UPPER(itembrand)) LIKE '%STANLEY%' OR
+              TRIM(UPPER(itembrand)) LIKE '%DEWALT%' OR
+              TRIM(UPPER(itembrand)) LIKE '%BLACK%DECKER%' Then NVL(PRICE,0)) REPLACED PRICESALE BY PRICE
+
+
+
+
+DEDUPE_SRC_US  AMAZON_US_COMPR_PRODUCTS
+DEDUPE_SRC_CA  AMAZON_CA_COMPR_PRODUCTS
+DEDUPE_SRC_LS_PRC SEQUENTUM.VW_LOWES_PRICING
+DEDUPE_SRC_HD_PRC SEQUENTUM.VW_HOMEDEPOT_PRICING
+DEDUPE_SRC_HD_COMPR SEQUENTUM.VW_HOMEDEPOT_COMPR_PRODUCTS
+DEDUPE_SRC_LS_COMPR  SEQUENTUM.VW_LOWES_COMPR_PRODUCTS
+
+REMARKS:
+1. IN AMAZON _US (LINE NO.62) IT IS SBD_PROD_dESC
+2. COMPTR_BRAND_LKEY NOT PRESENT
+GOT AS (IF NOT SBD) THEN IT IS COMPETITOR
+
+11,12,13,14,15,16 (ISO CODE),
+DIFFRENCE (US AND CA) AMAZON 
+IN AMAZON CA (WE HAVE PROD_BASE_PRC) WHCH WE DONT HAVE IN SOURCE
