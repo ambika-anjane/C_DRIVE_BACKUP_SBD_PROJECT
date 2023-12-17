@@ -1,0 +1,15 @@
+25.6.22
+unit test results uploaded
+1. SI_REF (done)
+2. FRED (done)
+3. Numerator phase 1  and phase 2(done)
+4. IHS unit results (done)
+5. covid (done)
+6. yahoodat (done)
+7. meteostats (done)
+8. moodys (done)
+9. NOAA (done)
+10. MS-POS (done)
+11. similar web (done)
+12. PROWL (done)
+13. Euromonitor (done)
