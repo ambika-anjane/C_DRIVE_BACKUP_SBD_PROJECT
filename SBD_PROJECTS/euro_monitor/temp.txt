@@ -1,0 +1,36 @@
+#srcSheet: Global-Market Size in Value
+srcSheet: Market Size in Value
+srcSheet: Market Size in Volume
+ srcSheet: Channel Data
+srcSheet: Manufacturer Data
+srcSheet: Brand Data
+srcSheet: Growth Trends
+srcSheet: Sources
+srcSheet: Data Metrics - Exchange Rate
+srcSheet: Data Metrics - Exchange Rate
+srcSheet: Data Metrics - Inflation
+
+
+srcSheet:
+     - Global-Market Size in Value
+     - Market Size in Value
+     - Market Size in Volume
+     - Channel Data
+     - Manufacturer Data
+     - Brand Data
+     - Growth Trends
+     - Sources
+     - Data Metrics - Exchange Rate
+     - Data Metrics - Inflation
+
+
+brandManufacturerMapping:
+  flatFileName: SI_BRAND_MANUFACTURER_MAPPING.csv
+  srcRecName: SI_BRAND_MANUFACTURER_MAPPING_LANDING
+  snowflakeConnection: brandManufacturerMappingConnection
+
+categoryMarketSize:
+  flatFileName: SI_CATEGORY_MARKET_SIZE.csv
+  srcRecName: SI_CATEGORY_MARKET_SIZE_LANDING
+  snowflakeConnection: categoryMarketSizeConnection
+

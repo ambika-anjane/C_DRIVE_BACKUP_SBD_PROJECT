@@ -1,0 +1,192 @@
+snowflakeBasicConnection:
+     snowflakeSecretName: sbd/caspian/dev/operations/db/sbd_caspian_snowflake
+     snowflakeRegionName: us-east-1
+
+yahooDataConnection:
+     snowflakeSchema: YAHOOFINANCE
+     snowflakeTableName: STOCKPRICE_ETF_LANDING
+     
+meteoStatStationsConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: METEOSTAT_STATIONS_LANDING   
+
+meteoFinalConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: FINALWEATHERDATA_LANDING
+
+meteoLatLongConnection:
+     snowflakeSchema: METEOSTAT
+     snowflakeTableName: LATLONGBYCITY_US_LANDING
+
+fredSeriesConnection:
+     snowflakeSchema: FRED
+     snowflakeTableName: FRED_SERIES_DEMAND_SENSING_LANDING
+
+fredObservationsConnection:
+     snowflakeSchema: FRED
+     snowflakeTableName: FRED_OBSERVATIONS_DEMAND_SENSING_LANDING     
+
+covidVaccinatedUSConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_VACCINATED_US_LANDING
+
+covidVaccinatedGlobalConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_VACCINE_GLOBAL_LANDING
+
+covidCasesGlobalConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_CASES_GLOBAL_LANDING
+
+covidCasesUsConnection:
+     snowflakeSchema: COVID
+     snowflakeTableName: COVID_CASES_US_LANDING
+     
+acquisitionConfigConnection:
+     snowflakeSchema: CONFIG_TABLES
+     snowflakeTableName: ACQUISITION_CONFIG
+
+moodysConnection:
+     snowflakeSchema: MOODYS
+     snowflakeTableName: MOODYS_ALL_INDICATORS_LANDING
+
+ihsPricingAndPurchasingHistoricalSeriesConnection:
+     snowflakeSchema: IHSMARKIT
+     snowflakeTableName: IHS_PRICING_AND_PURCHASING_HISTORICAL_SERIES_LANDING
+
+mpmExtractConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: MPM_EXTRACT_LANDING
+
+handToolsAndOPESBDMarketShareQuarterlyConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: HAND_TOOLS_AND_OPE_SBD_MARKET_SHARE_QUARTERLY_LANDING
+
+powerToolsAndPTASBDMarketShareQuarterlyConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: POWER_TOOLS_AND_PTA_SBD_MARKET_SHARE_QUARTERLY_LANDING
+
+shopperMetricHandToolsAndOPEConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: SHOPPER_METRIC_HAND_TOOLS_AND_OPE_LANDING
+
+shopperMetricPowerToolsAndPTAConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: SHOPPER_METRIC_POWER_TOOLS_AND_PTA_LANDING
+
+DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_GranularConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_REGION_SPLIT_ON_SUBCATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_GRANULAR_LANDING
+
+DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_REGION_SPLIT_ON_SUBCATEGORY_LEVEL_OF_HAND_TOOLSSTORAGE_OUTDOORS_LANDING
+                         
+
+DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_RETAILER_SPLIT_ON_SUBCATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+
+DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_RETAILER_SPLIT_ON_SUBCATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS_LANDING
+
+DF1_Region_split_on_Category_of_Power_Tools_PTAConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_REGION_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_LANDING
+
+DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_REGION_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING
+
+DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_RETAILER_SPLIT_ON_CATEGORY_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+                       
+DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_RETAILER_SPLIT_ON_CATEGORY_LEVEL_OF_HTASHTSTORAGEOUTDOORS_LANDING
+
+
+DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_REGION_SPLIT_ON_OVERALL_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+
+DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_REGION_SPLIT_ON_OVERALL_OF_HTASHAND_TOOLSSTORAGEOUTDOORS_LANDING
+
+DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF1_RETAILER_SPLIT_ON_OVERALL_OF_POWER_TOOLS_PTA_COMBINED_PTA_SBU_CG_DRILLS_SAWS_LANDING
+
+DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoorsConnection:
+     snowflakeSchema: NUMERATOR
+     snowflakeTableName: DF2_RETAILER_SPLIT_ON_OVERALL_OF_HTASHTSTORAGEOUTDOORS_LANDING
+
+msPosBaselineConnection:
+     snowflakeSchema: MS_POS
+     snowflakeTableName: MS_POS_BASELINE_LANDING
+
+ihsEconomicUSConnection:
+     snowflakeSchema: IHSMARKIT
+     snowflakeTableName: IHS_ECONOMIC_US_ECONOMY_HISTORICAL_SERIES_LANDING
+
+SW_Conversion_Rate:
+     snowflakeSchema: SIMILARWEB
+     snowflakeTableName: CONVERSION_RATE_LANDING
+
+SW_Online_Traffic:
+     snowflakeSchema: SIMILARWEB
+     snowflakeTableName: ONLINE_TRAFFIC_LANDING
+
+GLOBAL-MARKET-SIZE-IN-VALUE:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: GLOBAL_MARKET_SIZEIN_VALUE_LANDING
+
+MARKET_SIZEIN_VALUE:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: MARKET_SIZEIN_VALUE_LANDING
+
+MARKET-SIZE-IN-VOLUME:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: MARKET_SIZEIN_VOLUME_LANDING
+
+CHANNEL-DATA:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: CHANNEL_DATA_LANDING
+
+MANUFACTURER-DATA:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: MANUFACTURER_DATA_LANDING
+
+BRAND-DATA:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: BRAND_DATA_LANDING
+
+GROWTH-TRENDS:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: GROWTH_TRENDS_LANDING
+
+SOURCES:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: SOURCES_LANDING
+
+DATA-METRICS-EXCHANGE-RATE:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: DATA_METRICS_EXCHANGERATE_LANDING
+
+DATA-METRICS-EXCHANGE-RATE:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: DATA_METRICS_EXCHANGERATE_LANDING
+
+DATA-METRICS-INFLATION:
+     snowflakeSchema: EUROMONITOR
+     snowflakeTableName: DATA_METRICS_INFLATION_LANDING
+  
+
+  
+
+
+  
+

@@ -1,0 +1,272 @@
+meteoLatLongData:
+   excelFileName: latlongbycityus.xlsx
+   srcRecName: METEO_LAT_LONG_CITY_BY_US
+   snowflakeConnection: meteoLatLongConnection
+
+
+mpmExtract:
+   excelFileName: MPM.xlsx
+   srcRecName: MPM_EXTRACT_NUMERATOR
+   snowflakeConnection: mpmExtractConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber: 5
+   sheet3ColumnNumber: 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - QUARTERLY_SCORECARD_STORES
+    - BRAND
+
+
+handToolsAndOPESBDMarketShareQuarterly:
+   excelFileName: Hand_Tools and OPE_SBD_Market_Share_Quarterly.xlsx
+   srcRecName: Hand_Tools and OPE_SBD_Market_Share_Quarterly
+   snowflakeConnection: handToolsAndOPESBDMarketShareQuarterlyConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - BRAND
+
+powerToolsAndPTASBDMarketShareQuarterly:
+   excelFileName: Power_Tools_and_PTA_SBD_Market_Share_Quarterly.xlsx
+   srcRecName: Power_Tools_and_PTA_SBD_Market_Share_Quarterly
+   snowflakeConnection: powerToolsAndPTASBDMarketShareQuarterlyConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - BRAND
+
+shopperMetricHandToolsAndOPE:
+   excelFileName: Shopper_Metric_Hand_Tools and OPE.xlsx
+   srcRecName: Shopper_Metric_Hand_Tools_and_OPE
+   snowflakeConnection: shopperMetricHandToolsAndOPEConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 3
+   sheet3ColumnNumber : 3
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+
+shopperMetricPowerToolsAndPTA:
+   excelFileName: Shopper_Metric_Power_Tools_and_PTA.xlsx
+   srcRecName: Shopper_Metric_Power_Tools_and_PTA
+   snowflakeConnection: shopperMetricPowerToolsAndPTAConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 3
+   sheet3ColumnNumber : 3
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+
+DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Granular:
+   excelFileName: DF1_Region_split_on_Subcategory_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Granular.xlsx
+   srcRecName: DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Granular
+   snowflakeConnection: DF1_Region_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_GranularConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_Subcategory_level_of_Hand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - CENSUS_REGION
+
+
+DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_Subcategory_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_Subcategory_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - RETAILER
+
+DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_Subcategory_level_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 6
+   sheet3ColumnNumber : 6
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - SUBCATEGORY
+    - RETAILER
+
+DF1_Region_split_on_Category_of_Power_Tools_PTA:
+   excelFileName: DF1_Region_split_on_Category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Region_split_on_Category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Region_split_on_Category_of_Power_Tools_PTAConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_Category_level_of_HTASHand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - CENSUS_REGION
+
+
+
+DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_category_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_category_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - RETAILER
+
+
+
+DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_Category_level_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 5
+   sheet3ColumnNumber : 5
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CATEGORY
+    - RETAILER
+
+
+DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Region_split_on_overall_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Region_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CENSUS_REGION
+
+
+DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors:
+   excelFileName: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors.xlsx
+   srcRecName: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoors
+   snowflakeConnection: DF2_Region_split_on_overall_of_HTASHand_ToolsStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - CENSUS_REGION
+
+
+DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws:
+   excelFileName: DF1_Retailer_split_on_overall_of_Power_Tools__PTA_Combined_PTA_SBU_CG_Drills_Saws.xlsx
+   srcRecName: DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_Saws
+   snowflakeConnection: DF1_Retailer_split_on_overall_of_Power_Tools_PTA_Combined_PTA_SBU_CG_Drills_SawsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - RETAILER
+
+DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors:
+   excelFileName: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors.xlsx
+   srcRecName: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoors
+   snowflakeConnection: DF2_Retailer_split_on_overall_of_HTASHTStorageOutdoorsConnection
+   startingHeaderLine: 6
+   sheet1ColumnNumber : 4
+   sheet3ColumnNumber : 4
+   requiredColumns:
+    - METRIC
+    - PRODUCT_AND_CATEGORY
+    - CATEGORY_GROUP
+    - RETAILER
+
+
+SW_Conversion_Rate:
+   excelFileName: SW_conversion_rate.xlsx
+   srcRecName: SimilarWeb_Conversion_Rate
+   snowflakeConnection: SW_Conversion_Rate
+   
+
+SW_Online_Traffic:
+   excelFileName: SW_online_traffic.xlsx
+   srcRecName: SimilarWeb_Online_Traffic
+   snowflakeConnection: SW_Online_Traffic
+
+GLOBAL-MARKET-SIZE-IN-VALUE:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Global-Market Size in Value
+   srcRecName: GLOBAL_MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: GLOBAL_MARKET_SIZEIN_VALUE
+
+MARKET_SIZEIN_VALUE:
+   excelFileName: euromonitor_excel.xlsx
+   srcSheet: Market Size in Value
+   srcRecName: MARKET_SIZEIN_VALUE_LANDING
+   snowflakeConnection: MARKET_SIZEIN_VALUE
