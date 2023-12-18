@@ -1,0 +1,37 @@
+<style>
+
+    .module h2, .module caption, .inline-group h2,#header
+    {   
+        margin: 0;
+        padding: 2px 5px 3px 5px;
+        font-size: 11px;
+        text-align: left;
+        font-weight: bold;
+        background: #9370DB url(../img/default-bg.gif) top left repeat-x;
+        color: #9370DB;
+    }
+    
+    </style>
+
+
+index.html
+<style>
+
+    .module h2, .module caption, .inline-group h2,#header
+    {   
+        margin: 0;
+        padding: 2px 5px 3px 5px;
+        font-size: 11px;
+        text-align: left;
+        font-weight: bold;
+        background: #7FFFD4 url(../img/default-bg.gif) top left repeat-x;
+        color: #7FFFD4;
+    }
+
+</style>
+
+<style>
+    ul {
+      list-style-image: url('sqpurple.gif');
+    }
+    </style>
