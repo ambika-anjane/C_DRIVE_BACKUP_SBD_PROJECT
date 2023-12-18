@@ -1,0 +1,3 @@
+rold_id,role_name,created_on
+101,'Abhinav',now()
+102,'Vaishnav',now()

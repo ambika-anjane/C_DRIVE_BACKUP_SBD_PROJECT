@@ -1,0 +1,81 @@
+{{ config(
+   materialized = 'incremental',
+   tag = ['dimension'],
+   unique_key = 'customer_id',
+   merge_update_columns = 'customer_id'
+)
+}}
+
+with source as(
+select  distinct
+    "customer_id",
+    "first_name",
+    "last_name",
+    "customer_id",
+    "first_name",
+    "last_name",
+    "address",
+    "city",
+    "state",
+    "zip_code",
+    "marital_status"
+   
+from  {{ref('stg_customer_extract')}}
+),
+
+
+lkp_dim_test as(
+    select 0 as "p_key",
+           '-' as "customer_id",
+           '-' as "first_name",
+           '-' as "last_name",
+           '-' as  "address",
+           '-' as  "city",
+           '-' as  "state",
+           '-' as  "zip_code",
+           '-' as  "marital_status"
+    
+    {% if is_incremental() %}
+    union   
+    select 
+     d."p_key",
+     d."customer_id",
+     d."first_name",
+     d."last_name",
+     d."address",
+     d."city",
+     d."state",
+     d."zip_code",
+     d."marital_status"
+   
+   
+     from  {{ this }} d
+     {% endif %}
+),
+exp_detectchanges as (
+ select
+     l."customer_id",
+     s."address",
+     l."address" as "pm_prev_address",
+     S."city",
+     l."city" as "pm_prev_city",
+     s."first_name",
+     l."first_name" as "pm_prev_first_name",
+     s."last_name",
+     l."last_name" as "pm_prev_last_name",
+     s."marital_status",
+     l."marital_status" as "pm_prev_marital_status",
+     s."state",
+     l."state" as "pm_prev_state",
+     s."zip_code",
+     l."zip_code" as "pm_prev_zip_code",
+     current_timestamp as "effective_date"
+     from source s left join 
+     lkp_dim_test l
+     on s."customer_id" = l."customer_id"
+ )
+ select * from exp_detectchanges
+
+
+
+
