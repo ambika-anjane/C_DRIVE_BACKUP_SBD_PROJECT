@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+
+  - name: marketplace
+    schema: marketplace
+    tables:
+      - name: orders
+      - name: products
+      - name: suppliers
+      - name: customers
+      - name: companies
+
+  - name: weblog
+    schema: weblog
+    tables:
+      - name: logs
