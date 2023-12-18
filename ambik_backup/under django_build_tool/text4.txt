@@ -1,0 +1,18 @@
+/* These styles are generated from project.scss. */
+
+.alert-debug {
+  color: black;
+  background-color: #800080;
+  border-color: #800080;
+  /* border-color: #d6e9c6; */
+
+}
+
+.alert-error {
+  color: #9370DB;
+  background-color: #9370DB;
+  border-color: #9370DB;
+}
+
+
+
