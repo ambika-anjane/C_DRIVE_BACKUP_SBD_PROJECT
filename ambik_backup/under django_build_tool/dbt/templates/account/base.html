@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+
+{% block title %}{% block head_title %}{% endblock head_title %}{% endblock title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <div id="branding">
+      {% block branding %}{% endblock %}
+      <h1>Hello From Educative</h1>
+    
+    {% block nav-global %}{% endblock %}
+
+      </div>
+    {% block inner %}
+    <style>
+
+      .module h2, .module caption, .inline-group h2,#header
+      {   
+          margin: 0;
+          padding: 2px 5px 3px 5px;
+          font-size: 11px;
+          text-align: left;
+          font-weight: bold;
+          background: firebrick url(../img/default-bg.gif) top left repeat-x;
+          color: firebrick;
+      }
+    
+    </style>
+    {% endblock %}
+    
+  {% endblock %}
+  </div>
+</div>
+{% endblock %}
