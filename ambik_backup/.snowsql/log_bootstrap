@@ -1,0 +1,43 @@
+2023-12-05 08:41:11,627 (6268/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI167522\certifi\cacert.pem
+2023-12-05 08:41:11,627 (6268/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:41:11,628 (6268/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:41:11,653 (6268/MainThread) __main__ INFO      bootstrap:372  - auto upgrade without version
+2023-12-05 08:41:11,827 (6268/MainThread) __main__ INFO      bootstrap:249  - Recorded autoupgrade status
+2023-12-05 08:41:13,898 (6268/MainThread) __main__ INFO      bootstrap:1076 - Verified the signature. Downloaded snowsql is valid.
+2023-12-05 08:42:53,589 (28464/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI106442\certifi\cacert.pem
+2023-12-05 08:42:53,590 (28464/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:42:53,590 (28464/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:42:53,591 (28464/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:43:28,758 (8244/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI274282\certifi\cacert.pem
+2023-12-05 08:43:28,759 (8244/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:43:28,759 (8244/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:43:28,760 (8244/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:45:14,617 (13628/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI305962\certifi\cacert.pem
+2023-12-05 08:45:14,617 (13628/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:45:14,617 (13628/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:45:14,622 (13628/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:48:23,367 (26360/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI228042\certifi\cacert.pem
+2023-12-05 08:48:23,368 (26360/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:48:23,368 (26360/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:48:23,369 (26360/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:48:58,835 (7068/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI317282\certifi\cacert.pem
+2023-12-05 08:48:58,836 (7068/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:48:58,836 (7068/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:48:58,837 (7068/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:51:13,862 (24944/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI291162\certifi\cacert.pem
+2023-12-05 08:51:13,862 (24944/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:51:13,862 (24944/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:51:13,863 (24944/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-05 08:53:29,792 (21524/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI134162\certifi\cacert.pem
+2023-12-05 08:53:29,792 (21524/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-05 08:53:29,792 (21524/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-05 08:53:29,792 (21524/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade
+2023-12-06 04:43:52,850 (11920/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI344402\certifi\cacert.pem
+2023-12-06 04:43:52,850 (11920/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-06 04:43:52,850 (11920/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-06 04:43:52,850 (11920/MainThread) __main__ INFO      bootstrap:372  - auto upgrade without version
+2023-12-06 04:43:53,056 (11920/MainThread) __main__ INFO      bootstrap:249  - Recorded autoupgrade status
+2023-12-06 04:45:02,485 (34464/MainThread) snowflake.cli.common.util_cli INFO       util_cli:752  - cacert.pem is set to REQUESTS_CA_BUNDLE: C:\Users\ambik\AppData\Local\Temp\_MEI138202\certifi\cacert.pem
+2023-12-06 04:45:02,485 (34464/MainThread) __main__ INFO      bootstrap:352  - no autoupgrade option: False
+2023-12-06 04:45:02,485 (34464/MainThread) __main__ INFO      bootstrap:354  - version: None, ret_options: None
+2023-12-06 04:45:02,485 (34464/MainThread) __main__ INFO      bootstrap:375  - skipping auto upgrade

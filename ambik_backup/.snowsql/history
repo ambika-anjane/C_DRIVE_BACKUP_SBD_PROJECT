@@ -1,0 +1,1462 @@
+
+# 2023-12-05 14:31:54.849662
++SELECT CURRENT_WAREHOUSE();
+
+# 2023-12-05 14:32:12.839352
++SELECT CURRENT_DATABASE();
+
+# 2023-12-05 14:32:24.864128
++create or replace database sf_tuts;
+
+# 2023-12-05 14:36:30.535541
++CREATE OR REPLACE TABLE data_staging (
++  raw variant);
+
+# 2023-12-05 14:36:58.359822
++  CREATE OR REPLACE STAGE mystage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:37:17.102047
++ CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
+
+# 2023-12-05 14:37:38.492462
++ CREATE OR REPLACE STAGE mystage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:37:47.765025
++  PUT 'file:///Downloads/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:37:55.725935
++  PUT 'file://C:\temp\data\sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:38:10.647453
++  PUT 'file:///Downloads/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:38:46.246032
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:41:44.237893
++COPY INTO DATA_STAGING
++   FROM @mystage/sales.json.gz;
+
+# 2023-12-05 14:44:41.557856
++CREATE OR REPLACE TABLE data_staging (
++  raw variant);
+
+# 2023-12-05 14:44:55.964166
++  CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
+
+# 2023-12-05 14:45:05.163221
++  CREATE OR REPLACE STAGE mystage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:45:14.245229
++PUT 'file:///Downloads/sales.json' @mystage AUTO_COMPRESS=TRUE;
+
+# 2023-12-05 14:45:23.702626
++  PUT 'file:///Downloads/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:46:18.583569
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:48:01.708005
++  PUT 'file:///Downloads/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:48:06.953226
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:49:26.665464
++  CREATE OR REPLACE STAGE onstage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:49:31.323658
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:49:44.623294
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:51:16.065516
++create or replace database sf_tuts;
+
+# 2023-12-05 14:51:24.729814
++  CREATE OR REPLACE STAGE onstage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:51:38.995484
++  CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
+
+# 2023-12-05 14:51:42.356356
++  CREATE OR REPLACE STAGE onstage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 14:51:47.715473
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:54:58.854810
++CREATE OR REPLACE TABLE data_staging (
++  raw variant);
+
+# 2023-12-05 14:57:13.175446
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 14:59:05.864538
++  PUT 'file://C:/temp/data/test.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 15:00:04.282668
++COPY INTO data_staging
++   FROM @onstage/test.json.gz;
+
+# 2023-12-05 15:01:43.354365
++COPY INTO data VALIDATION_MODE = 'RETURN_ERRORS';
+
+# 2023-12-05 15:01:54.644734
++COPY INTO data_staging VALIDATION_MODE = 'RETURN_ERRORS';
+
+# 2023-12-05 15:34:34.472701
++ CREATE OR REPLACE STAGE mystage
++  FILE_FORMAT = json_format;
+
+# 2023-12-05 15:36:23.850963
++COPY INTO @mystage/result/data_
++  FROM data_staging FILE_FORMAT = (FORMAT_NAME ='json_format' COMPRESSION='GZIP');
+
+# 2023-12-05 15:37:47.629174
++GET @~/mystage file:///tmp/data/;
+
+# 2023-12-05 15:37:59.241593
++GET @~/myfiels  file:///tmp/data/;
+
+# 2023-12-05 15:38:22.037966
++GET @%mytable file:///tmp/data/;
+
+# 2023-12-05 15:38:34.774996
++GET @test  file:///tmp/data/;
+
+# 2023-12-05 15:38:45.075043
++GET @data_staging  file:///tmp/data/;
+
+# 2023-12-05 15:38:59.682629
++GET @mystage  file:///tmp/data/;
+
+# 2023-12-05 15:39:50.581121
++GET @data_staging file://C:/temp/data/sales.json;
+
+# 2023-12-05 15:40:08.766418
++GET @mystage file://C:/temp/data/sales.json;
+
+# 2023-12-05 15:42:10.533828
++GET @mystage  file:///tmp/data/;
+
+# 2023-12-05 15:42:39.659760
++GET @mystage  file///C:/tmp/data/;
+
+# 2023-12-05 15:45:01.066658
++COPY INTO @mystage/result/data_ FROM (SELECT * FROM data_staging)
++   file_format=(format_name='myformat' compression='gzip');
+
+# 2023-12-05 15:45:14.280855
++COPY INTO @mystage/result/data_ FROM (SELECT * FROM data_staging)
++   file_format=(format_name='json_format' compression='gzip');
+
+# 2023-12-05 15:47:12.974481
++COPY INTO @onystage/result/data_ FROM (SELECT * FROM data_staging)
++   file_format=(format_name='json_format' compression='gzip');
+
+# 2023-12-05 15:47:23.047197
++COPY INTO @onstage/result/data_ FROM (SELECT * FROM data_staging)
++   file_format=(format_name='json_format' compression='gzip');
+
+# 2023-12-05 15:47:44.058379
++GET @onstage  file///C:/tmp/data/;
+
+# 2023-12-05 15:47:57.162300
++GET @onstage file://C:/temp/data/sales.json;
+
+# 2023-12-05 15:48:18.725837
++GET @onstage;
+
+# 2023-12-05 15:50:08.990511
++get @~/mystage  file://C:\OutputFiles\User;
+
+# 2023-12-05 15:50:17.597191
++get @~/mystage  file://C:/OutputFiles/User;
+
+# 2023-12-05 15:51:10.534756
++get @~/mystage  file://C:/OutputFiles/NamedInternal;
+
+# 2023-12-05 15:51:20.336965
++get @mystage  file://C:/OutputFiles/NamedInternal;
+
+# 2023-12-05 15:52:35.921044
++get @onstage  file://C:/OutputFiles/NamedInternal;
+
+# 2023-12-05 15:53:13.607070
++get @onstage  file://C:/temp/data/NamedInternal;
+
+# 2023-12-05 15:53:45.636886
++get @onstage  file://C:\temp\data\NamedInternal;
+
+# 2023-12-05 15:54:28.993805
++get @onstage  file://C:/temp/data/NamedInternal;
+
+# 2023-12-05 15:55:14.313869
++copy into @mystage from data_staging;
+
+# 2023-12-05 15:55:25.542182
++get @mystage  file://C:/temp/data/NamedInternal;
+
+# 2023-12-05 15:56:24.380627
++get @mystage  file://C:\temp\data\NamedInternal;
+
+# 2023-12-05 15:56:43.617487
++get @mystage  file://C:\temp\data\mystage;
+
+# 2023-12-05 15:58:07.579731
++get @mystage  file://C:\temp\data\test;
+
+# 2023-12-05 15:58:15.458425
++get @mystage  file://C:\temp\data\test.json;
+
+# 2023-12-05 15:59:51.184608
++get @mystage  file://C:\\temp\\data\\test.json;
+
+# 2023-12-05 16:00:06.589642
++get @mystage  file://C:\\temp\\data\\sample.json;
+
+# 2023-12-05 16:01:17.401108
++get @mystage  file://C:/temp/data/sample.json;
+
+# 2023-12-05 16:02:15.342341
++get @mystage 'file://C:/temp/data/sample.json';
+
+# 2023-12-05 16:02:22.973885
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-05 16:33:04.076755
++CREATE DATABASE SF_SAMPLE;
+
+# 2023-12-05 16:34:39.663828
++create or replace stage mystage;
+
+# 2023-12-05 16:34:56.269264
++list @mystage;
+
+# 2023-12-05 16:35:44.994320
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:35:51.835986
++list @mystage;
+
+# 2023-12-05 16:37:27.668776
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:37:56.916548
++  CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
+
+# 2023-12-05 16:39:17.239666
++  CREATE OR REPLACE TABLE DATA_STAGING(RAW JSON)
++ ;
+
+# 2023-12-05 16:41:34.968718
++  CREATE OR REPLACE TABLE DATA_STAGING(RAW variant);
+
+# 2023-12-05 16:42:23.019737
++select * from DATA_STAGING;
+
+# 2023-12-05 16:42:28.015099
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:43:09.025275
++copy into data_staging  from @mystage   on_error = 'skip_file';
+
+# 2023-12-05 16:43:18.493722
++select * from DATA_STAGING;
+
+# 2023-12-05 16:44:45.192439
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:47:13.577415
++  PUT 'file://C:/temp/data/test.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:47:25.465920
++  PUT 'file://C:/temp/data/test.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:47:48.041627
++list @mystage;
+
+# 2023-12-05 16:48:01.360578
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:51:50.123353
++  PUT 'file://C:/temp/data/test.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:51:59.167940
++list @mystage;
+
+# 2023-12-05 16:52:07.542499
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:52:34.478085
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:52:40.457334
++list @mystage;
+
+# 2023-12-05 16:52:48.043117
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:53:00.685197
++drop stage mystage;
+
+# 2023-12-05 16:53:13.984737
++create stage onstage;
+
+# 2023-12-05 16:53:25.458066
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:53:32.500328
++list @mystage;
+
+# 2023-12-05 16:53:43.691123
++list @onstage;
+
+# 2023-12-05 16:53:48.796121
++copy into data_staging  from @mystage;
+
+# 2023-12-05 16:53:55.672215
++copy into data_staging  from @onstage;
+
+# 2023-12-05 16:55:21.617144
++drop stage mystage;
+
+# 2023-12-05 16:55:26.970231
++drop stage onstage;
+
+# 2023-12-05 16:55:43.012039
++  PUT 'file://C:/temp/data/data_0_0_0.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:56:01.134240
++create stage onstage;
+
+# 2023-12-05 16:56:05.767465
++  PUT 'file://C:/temp/data/data_0_0_0.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:56:14.483820
++list @onstage;
+
+# 2023-12-05 16:56:23.625208
++copy into data_staging  from @onstage;
+
+# 2023-12-05 16:58:36.140672
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:58:40.493461
++list @onstage;
+
+# 2023-12-05 16:58:50.501001
++drop stage onstage;
+
+# 2023-12-05 16:58:56.551208
++create stage onstage;
+
+# 2023-12-05 16:59:01.902138
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 16:59:47.950233
++list @onstage;
+
+# 2023-12-05 16:59:59.156296
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:03:36.412035
++copy into data_staging  from @onstage/sales.json;
+
+# 2023-12-05 17:04:14.770878
++copy into data_staging  from @onstage/sales.json n_error = 'continue';
+
+# 2023-12-05 17:04:27.463199
++copy into data_staging  from @onstage/sales.json  on_error = 'continue';
+
+# 2023-12-05 17:05:35.355305
++select * from data_staging;
+
+# 2023-12-05 17:05:52.333589
++copy into data_staging  from @onstage/sales.json  on_error = 'continue';
+
+# 2023-12-05 17:05:56.383289
++select * from data_staging;
+
+# 2023-12-05 17:06:05.191665
++copy into data_staging  from @onstage/sales.json;
+
+# 2023-12-05 17:06:16.388549
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:06:55.225294
++list @onstage;
+
+# 2023-12-05 17:07:04.641399
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:07:22.572816
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:07:28.600335
++list @onstage;
+
+# 2023-12-05 17:07:31.756746
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:08:08.925678
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:08:17.602909
++list @onstage;
+
+# 2023-12-05 17:08:21.371519
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:09:52.030485
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:09:57.605253
++list @onstage;
+
+# 2023-12-05 17:10:01.687474
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:11:13.732688
++desc data_staging;
+
+# 2023-12-05 17:11:37.653413
++list @onstage;
+
+# 2023-12-05 17:11:53.749441
++drop table data_staging;
+
+# 2023-12-05 17:12:25.701818
++create or replace table data_staging (raw variant);
+
+# 2023-12-05 17:12:34.889630
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:12:39.165914
++list @onstage;
+
+# 2023-12-05 17:12:47.008669
++copy into data_staging  from @onstage;
+
+# 2023-12-05 17:13:04.634434
++copy into data_staging  from @onstage/sales.json  on_error = 'continue';
+
+# 2023-12-05 17:13:19.382221
++select * from data_staging;
+
+# 2023-12-05 17:25:25.535193
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:25:31.488268
++list @onstage;
+
+# 2023-12-05 17:25:35.409976
++copy into data_staging  from @onstage/sales.json  on_error = 'continue';
+
+# 2023-12-05 17:25:48.349603
++copy into data_staging  from @onstage/sales.json;
+
+# 2023-12-05 17:26:58.385881
++select * from data_staging;
+
+# 2023-12-05 17:30:04.804724
++create or replace table data_staging (raw variant);
+
+# 2023-12-05 17:30:14.205750
++  PUT 'file://C:/temp/data/sales.json' @onstage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-05 17:30:18.888331
++list @onstage;
+
+# 2023-12-05 17:30:24.572881
++copy into data_staging  from @onstage/sales.json;
+
+# 2023-12-05 17:32:37.604511
++copy into @onstage from data_staging;
+
+# 2023-12-05 17:32:43.119731
++list @onstage;
+
+# 2023-12-05 17:33:14.763215
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-05 17:33:20.928681
++get @onstage  file://C:/temp/data/;
+
+# 2023-12-05 17:35:34.487820
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-05 17:35:41.063580
++get @onstage  file://C:/temp/data/;
+
+# 2023-12-06 10:03:33.331314
++drop database sf_sample;
+
+# 2023-12-06 10:04:02.341256
++create database sf_tuts;
+
+# 2023-12-06 10:04:10.900637
++create or replace table data_staging (raw variant);
+
+# 2023-12-06 10:04:19.093560
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:04:31.718918
++CREATE OR REPLACE TABLE data_prod1 (
++    id number(8),
++    ts TIMESTAMP_TZ
++    );
+
+# 2023-12-06 10:04:41.302663
++CREATE OR REPLACE TABLE data_prod2 (
++    id number(8),
++    color VARCHAR,
++    num NUMBER
++    );
+
+# 2023-12-06 10:05:18.747937
++ CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
++
+
+# 2023-12-06 10:06:37.095148
++CREATE  STAGE mystage
++  FILE_FORMAT = json_format;
++
+
+# 2023-12-06 10:07:05.345267
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-06 10:07:30.699747
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:07:44.161362
++select * from data_staging;
+
+# 2023-12-06 10:08:05.418925
++list @mystage;
+
+# 2023-12-06 10:08:24.173180
++copy into @mystage from data_staging;
+
+# 2023-12-06 10:08:34.592926
++select * from data_staging;
+
+# 2023-12-06 10:08:40.408019
++list @mystage;
+
+# 2023-12-06 10:08:52.965306
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-06 10:10:12.794024
++select * from data_check;
+
+# 2023-12-06 10:10:20.796245
++INSERT INTO data_prod1 (id, ts)
++SELECT t.raw:id, to_timestamp_tz(t.raw:x1)
++FROM data_check t
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:10:34.693096
++select * from DATA_PROD1;
+
+# 2023-12-06 10:10:52.476115
++select * from data_staging;
+
+# 2023-12-06 10:11:11.374759
++select * from data_check;
+
+# 2023-12-06 10:12:54.941766
++drop database sf_tuts;
+
+# 2023-12-06 10:13:14.009306
++exit;
+
+# 2023-12-06 10:18:16.659724
++create database sf_sample;
+
+# 2023-12-06 10:18:57.335865
++create or replace table data_staging (raw variant);
+
+# 2023-12-06 10:20:18.650538
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:24:17.720674
++CREATE OR REPLACE TABLE data_prod1 (
++    id number(8),
++    ts TIMESTAMP_TZ
++    );
+
+# 2023-12-06 10:24:57.751155
++ CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
++
+
+# 2023-12-06 10:25:16.556027
++CREATE  STAGE mystage
++  FILE_FORMAT = json_format;
++
+
+# 2023-12-06 10:25:31.307738
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-06 10:25:42.465946
++list @mystage;
+
+# 2023-12-06 10:26:13.761942
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:26:23.066766
++select * from data_staging;
+
+# 2023-12-06 10:26:51.898517
++copy into mystage from data_staging;
+
+# 2023-12-06 10:27:00.935198
++copy into @mystage from data_staging;
+
+# 2023-12-06 10:27:11.499657
++list@mystage;
+
+# 2023-12-06 10:27:28.268278
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-06 10:27:51.346996
++INSERT INTO data_prod1 (id, ts)
++SELECT t.raw:id, to_timestamp_tz(t.raw:x1)
++FROM data_check t
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:28:00.104861
++select * from data_check;
+
+# 2023-12-06 10:28:09.950677
++select * from data_prod1;
+
+# 2023-12-06 10:31:07.802004
++CREATE OR REPLACE TABLE data_prod2 (
++   RAW VARIANT
++    );
+
+# 2023-12-06 10:31:54.663258
++INSERT INTO data_prod2 
++SELECT * FROM DATA_STAGING;
++WHERE METADATA$ACTION = 'INSERT'
+
+# 2023-12-06 10:32:08.869464
++INSERT INTO data_prod2 
++SELECT * FROM DATA_STAGING
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:33:03.691605
++select * from DATA_PROD2;
+
+# 2023-12-06 10:36:05.091439
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:36:20.534437
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:36:30.464796
++SELECT * FROM DATA_STAGING;
+
+# 2023-12-06 10:36:44.491209
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:38:47.612046
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:38:54.776342
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:38:59.910816
++SELECT * FROM DATA_STAGING;
+
+# 2023-12-06 10:39:07.082833
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:39:18.436158
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:39:29.522653
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:39:32.887879
++SELECT * FROM DATA_STAGING;
+
+# 2023-12-06 10:39:38.062013
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:40:12.474299
++list@mystage;
+
+# 2023-12-06 10:40:17.906012
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:40:21.367223
++SELECT * FROM DATA_STAGING;
+
+# 2023-12-06 10:40:28.072597
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:40:42.783722
++DROP TABLE DATA_STAGING;
+
+# 2023-12-06 10:41:02.378825
++create or replace table data_staging (raw variant);
+
+# 2023-12-06 10:41:26.739275
++CREATE OR REPLACE STREAM data_check ON TABLE data_staging;
++
+
+# 2023-12-06 10:41:43.746822
++ CREATE OR REPLACE FILE FORMAT json_format
++  TYPE = 'JSON'
++  STRIP_OUTER_ARRAY = TRUE;
++
+
+# 2023-12-06 10:42:00.619661
++CREATE  STAGE mystage
++  FILE_FORMAT = json_format;
++
+
+# 2023-12-06 10:42:09.105092
++DROP STAGE MYSTAGE;
+
+# 2023-12-06 10:42:11.096477
++CREATE  STAGE mystage
++  FILE_FORMAT = json_format;
++
+
+# 2023-12-06 10:42:27.407855
++  PUT 'file://C:/temp/data/sales.json' @mystage AUTO_COMPRESS=TRUE;
++
+
+# 2023-12-06 10:42:35.357181
++list@mystage;
+
+# 2023-12-06 10:42:42.873370
++copy into data_staging  from @mystage;
+
+# 2023-12-06 10:42:50.937759
++SELECT * FROM DATA_STAGING;
+
+# 2023-12-06 10:43:01.387524
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:43:36.365457
++INSERT INTO data_prod2 
++SELECT * FROM DATA_CHECK
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:44:04.397765
++CREATE OR REPLACE TABLE data_prod2 (
++   RAW VARIANT
++    );
+
+# 2023-12-06 10:44:16.704416
++SELECT * FROM PROD_2;
+
+# 2023-12-06 10:44:26.844412
++SELECT * FROM DATA_PROD2;
+
+# 2023-12-06 10:44:34.399352
++INSERT INTO data_prod2 
++SELECT * FROM DATA_CHECK
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:44:43.325563
++SELECT * FROM DATA_CHECK;
+
+# 2023-12-06 10:47:12.427932
++CREATE OR REPLACE TABLE data_prod2 (
++    RAW VARIANT,
++    ts TIMESTAMP_TZ
++    );
+
+# 2023-12-06 10:47:48.582653
++INSERT INTO data_prod2 
++SELECT *
++FROM data_check t
++WHERE METADATA$ACTION = 'INSERT';
+
+# 2023-12-06 10:48:00.065725
++DESC DATA_CHECK;
+
+# 2023-12-06 10:50:17.832810
++create or replace  table t2(id int, name string, stream_type string default NULL);
++
+
+# 2023-12-06 10:50:46.540007
++insert into t2(id,name,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-06 10:50:58.591574
++drop table t2;
+
+# 2023-12-06 10:51:57.552335
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-06 10:52:18.617200
++select * from data_staging;
+
+# 2023-12-06 10:54:18.126068
++create or replace  table t2(raw variant, stream_type string default NULL);
++
+
+# 2023-12-06 10:54:24.053377
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-06 10:55:04.732753
++insert into t2(raw,stream_type) select raw, 'delta stream' from data_check;
+
+# 2023-12-06 10:55:12.879375
++select * from t2;
+
+# 2023-12-06 10:58:15.182749
++copy into @mystage from data_staging;
+
+# 2023-12-06 10:58:34.621824
++select * from data_check;
+
+# 2023-12-06 11:01:04.098574
++get @mystage  file://C:/temp/data/;
+
+# 2023-12-06 11:01:29.211657
++select * from t2;
+
+# 2023-12-06 11:01:50.308119
++select * from data_staging;
+
+# 2023-12-06 11:02:02.649419
++list @mystage;
+
+# 2023-12-06 11:05:25.005868
++create or replace table t(id int, name string);
++
+
+# 2023-12-06 11:05:45.711206
++create or replace  stream delta_s on table t;
++
+
+# 2023-12-06 11:05:59.176866
++create or replace  stream append_only_s on table t append_only=true;
++
+
+# 2023-12-06 11:06:16.278337
++insert into t values (0, 'charlie brown');
++insert into t values (1, 'lucy');
++insert into t values (2, 'linus');
+
+# 2023-12-06 11:06:27.340288
++select * from t;
+
+# 2023-12-06 11:06:42.042507
++delete from t where id = '0';
++
+
+# 2023-12-06 11:06:47.801066
++select * from delta_s order by id;
++
+
+# 2023-12-06 11:07:05.320861
++select * from append_only_s order by id;
++
+
+# 2023-12-06 11:08:02.822747
++create or replace  table t2(id int, name string, stream_type string default NULL);
++
+
+# 2023-12-06 11:08:18.614206
++insert into t2(id,name,stream_type) select id, name, 'append_only stream' from append_only_s;
++
+
+# 2023-12-06 11:08:50.629656
++select * from t2;
+
+# 2023-12-08 21:41:33.952609
++copy into data_staging  from @mystage;
+
+# 2023-12-08 21:42:01.401320
++select * from data_check;
+
+# 2023-12-08 21:56:17.430821
++CREATE OR REPLACE TASK task1
++SCHEDULE = 'USING CRON * * * * * America/Chicago' // process new records every minute
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-08 21:56:33.934126
++execute task task1;
+
+# 2023-12-08 21:56:39.862385
++select * from t2;
+
+# 2023-12-08 21:59:21.585676
++create or replace  table t2(id int, name string, stream_type string default NULL);
++
+
+# 2023-12-08 21:59:29.787461
++CREATE OR REPLACE TASK task1
++SCHEDULE = 'USING CRON * * * * * America/Chicago' // process new records every minute
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-08 21:59:38.367778
++select * from data_check;
+
+# 2023-12-08 21:59:49.938200
++execute task task1;
+
+# 2023-12-08 21:59:58.028531
++select * from t2;
+
+# 2023-12-08 22:00:52.262982
++CREATE OR REPLACE TASK task1
++SCHEDULE = 1 minute
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-08 22:05:53.885495
++CREATE OR REPLACE TASK task1
++SCHEDULE ='1 minute'
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select id, name, 'delta stream' from data_check;
+
+# 2023-12-08 22:06:01.302917
++execute task task1;
+
+# 2023-12-08 22:06:07.653199
++select * from t2;
+
+# 2023-12-08 22:06:16.769795
++select * from data_check;
+
+# 2023-12-08 22:06:29.745436
++select * from t2;
+
+# 2023-12-08 22:06:33.926381
++execute task task1;
+
+# 2023-12-08 22:06:39.052719
++select * from t2;
+
+# 2023-12-08 22:06:56.350005
++execute task task1;
+
+# 2023-12-08 22:07:03.798278
++select * from t2;
+
+# 2023-12-08 22:07:36.430111
++CREATE OR REPLACE TASK task1
++SCHEDULE ='1 minute'
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select raw, 'delta stream' from data_check;
+
+# 2023-12-08 22:07:42.764737
++execute task task1;
+
+# 2023-12-08 22:07:47.453270
++select * from t2;
+
+# 2023-12-08 22:08:03.978227
++select * from data_check;
+
+# 2023-12-08 22:13:38.341044
++CREATE OR REPLACE TASK task1
++SCHEDULE ='1 minute'
++WHEN
++SYSTEM$STREAM_HAS_DATA('data_check')
++AS
++insert into t2(raw,stream_type) select raw, 'delta stream' from data_check;
+
+# 2023-12-08 22:13:44.008822
++select * from t2;
+
+# 2023-12-08 22:13:53.384403
++drop task task2;
+
+# 2023-12-08 22:13:57.826036
++drop task task1;
+
+# 2023-12-08 22:14:11.286148
++select * from t2;
+
+# 2023-12-08 22:14:35.678552
++drop table t2;
+
+# 2023-12-08 22:14:49.656699
++create or replace  table t2(id int, name string, stream_type string default NULL);
++
+
+# 2023-12-08 22:15:27.152586
++select * from t2;
+
+# 2023-12-08 22:15:56.995817
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   AS
++                                   insert into t2(id,name,stream_type) select id, name, 'delta stream' from delta_s;
++
+
+# 2023-12-08 22:16:05.947818
++execute task task1;
+
+# 2023-12-08 22:16:11.427279
++select * from t2;
+
+# 2023-12-08 22:16:24.878327
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   AS
++                                   insert into t2(id,name,stream_type) select id, name, 'delta stream' from delta_s;
++
+
+# 2023-12-08 22:16:28.890472
++execute task task1;
+
+# 2023-12-08 22:16:36.000248
++select * from t2;
+
+# 2023-12-08 22:46:38.742354
++drop task task1;
+
+# 2023-12-08 22:46:46.948340
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 22:46:54.478492
++execute task task1;
+
+# 2023-12-08 22:47:01.872495
++select * from t2;
+
+# 2023-12-08 22:47:31.158124
++drop tasl task1;
+
+# 2023-12-08 22:47:36.073313
++drop task task1;
+
+# 2023-12-08 22:47:55.788809
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_ss')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from delta_only_s;
+
+# 2023-12-08 22:48:02.489384
++drop tasl task1;
+
+# 2023-12-08 22:48:09.624065
++drop task task1;
+
+# 2023-12-08 22:48:23.384567
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_ss')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:48:32.115091
++execute task task1;
+
+# 2023-12-08 22:48:38.988823
++select * from t2;
+
+# 2023-12-08 22:48:47.797671
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:48:51.022358
++execute task task1;
+
+# 2023-12-08 22:48:55.721396
++select * from t2;\
+
+# 2023-12-08 22:49:33.124565
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:49:54.616010
++execute task task1;
+
+# 2023-12-08 22:50:00.240976
++select * from t2;
+
+# 2023-12-08 22:50:43.163692
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA(append_only_s)
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:50:58.664619
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:51:44.023891
++select * from t2;
+
+# 2023-12-08 22:51:49.272470
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('append_only_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from append_only_s;
+
+# 2023-12-08 22:52:00.599176
++execute task task1;
+
+# 2023-12-08 22:52:05.449982
++select * from t2;
+
+# 2023-12-08 23:01:43.839267
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:01:53.088317
++select * from t2;
+
+# 2023-12-08 23:06:36.419598
++drop table t
++drop table t2
++drop stream SF_SAMPLE.PUBLIC.APPEND_ONLY_S
++drop stream SF_SAMPLE.PUBLIC.DELTA_S
++drop task task1;
+
+# 2023-12-08 23:06:47.291558
++drop table t;
+
+# 2023-12-08 23:06:50.261867
++drop table t2;
+
+# 2023-12-08 23:07:09.401242
++drop stream SF_SAMPLE.PUBLIC.APPEND_ONLY_S;
+
+# 2023-12-08 23:07:31.299403
++drop stream SF_SAMPLE.PUBLIC.DELTA_S;
+
+# 2023-12-08 23:07:49.039705
++drop task task1;
+
+# 2023-12-08 23:07:57.532276
++create or replace table t(id int, name string);
++
+
+# 2023-12-08 23:08:08.527638
++create or replace  stream delta_s on table t;
++
+
+# 2023-12-08 23:08:34.293881
++create or replace  stream append_only_s on table t append_only=true;
++
+
+# 2023-12-08 23:27:29.291632
++insert into t values (0, 'charlie brown');
++insert into t values (1, 'lucy');
++insert into t values (2, 'linus');
+
+# 2023-12-08 23:27:40.122829
++SELECT * FROM T;
+
+# 2023-12-08 23:27:46.791299
++SELECT * FROM DELTA_S;
+
+# 2023-12-08 23:27:56.587577
++SELECT * FROM APPEND_ONLY_S;
+
+# 2023-12-08 23:28:07.419459
++delete from t where id = '0';
++
+
+# 2023-12-08 23:28:16.551407
++select * from delta_s order by id;
++
+
+# 2023-12-08 23:28:22.297507
++select * from append_only_s order by id;
++
+
+# 2023-12-08 23:28:37.709557
++update t set  name = 'sally' where id = 2;
+
+# 2023-12-08 23:28:50.123842
++SELECT * FROM T;
+
+# 2023-12-08 23:28:59.563369
++select * from delta_s order by id;
++
+
+# 2023-12-08 23:29:04.891247
++select * from append_only_s order by id;
++
+
+# 2023-12-08 23:29:20.915829
++create or replace  table t2(id int, name string, stream_type string default NULL);
++
+
+# 2023-12-08 23:29:29.883499
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from delta_only_s;
+
+# 2023-12-08 23:29:43.389255
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:29:55.084310
++SELECT * FROM T2;
+
+# 2023-12-08 23:30:17.918809
++SELECT * FROM DELTA_S;
+
+# 2023-12-08 23:30:26.838239
++SELECT * FROM APPEND_ONLY_S;
+
+# 2023-12-08 23:30:31.559258
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:30:35.371375
++SELECT * FROM T2;
+
+# 2023-12-08 23:30:57.008852
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_only_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'append only stream' from delta_only_s;
+
+# 2023-12-08 23:31:02.420441
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:31:06.211376
++SELECT * FROM T2;
+
+# 2023-12-08 23:31:09.733515
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:31:30.206927
++SELECT * FROM T2;
+
+# 2023-12-08 23:31:33.812772
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:31:39.128999
++SELECT * FROM T2;
+
+# 2023-12-08 23:31:41.034371
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:31:45.031221
++SELECT * FROM T2;
+
+# 2023-12-08 23:31:50.577220
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:31:53.029014
++SELECT * FROM T2;
+
+# 2023-12-08 23:33:41.991055
++CREATE OR REPLACE TASK task1
++                                   SCHEDULE ='1 minute'
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:34:25.051442
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:34:30.985790
++SELECT * FROM T2;
+
+# 2023-12-08 23:34:33.036515
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:40:10.739407
++SELECT * FROM T2;
+
+# 2023-12-08 23:40:19.214489
++CREATE OR REPLACE TASK task1
++                                   
++                                   WHEN
++                                   SYSTEM$STREAM_HAS_DATA('delta_s')
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:40:23.768847
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:40:29.750629
++SELECT * FROM T2;
+
+# 2023-12-08 23:40:43.614010
++SELECT * FROM delta_s;
+
+# 2023-12-08 23:41:20.884842
++CREATE OR REPLACE TASK task1
++                                   
++                                   WHEN
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:41:28.769951
++CREATE OR REPLACE TASK task1
++                                   
++                                   
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:41:36.220310
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:41:42.350542
++SELECT * FROM T2;
+
+# 2023-12-08 23:41:44.763991
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:41:46.480266
++SELECT * FROM T2;
+
+# 2023-12-08 23:41:48.797771
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:41:58.815703
++CREATE OR REPLACE TASK task1
++                                   
++                                   
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:42:02.235994
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:42:05.698622
++SELECT * FROM T2;
+
+# 2023-12-08 23:46:44.196900
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:47:19.799121
++SELECT * FROM T2;
+
+# 2023-12-08 23:47:45.084848
++SELECT * FROM dealt_s;
+
+# 2023-12-08 23:47:50.312934
++SELECT * FROM delta_s;
+
+# 2023-12-08 23:48:32.422788
++CREATE OR REPLACE AS
++                              insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:48:38.756274
++CREATE OR REPLACE 
++                              insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:49:20.341850
++CREATE OR REPLACE AS
++                              insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:49:23.548650
++CREATE OR REPLACE TASK task1
++                                   AS
++                                   insert into t2(raw,stream_type) select raw, 'delta stream' from delta_s;
+
+# 2023-12-08 23:49:31.865377
++EXECUTE TASK TASK1;
+
+# 2023-12-08 23:49:39.251302
++SELECT * FROM T2;
